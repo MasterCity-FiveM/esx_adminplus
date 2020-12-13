@@ -23,6 +23,14 @@ RegisterCommand("tpm", function(source, args, rawCommand)	-- /tpm		teleport to w
 	end
 end, false)
 
+
+ESX.RegisterCommand('tpl', 'admin', function(xPlayer, args, showError)
+	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
+end, true, {help = "Teleport to Location", validate = true, arguments = {
+	{name = 'x', help = 'X', type = 'number'},
+	{name = 'y', help = 'Y', type = 'number'}
+}})
+
 RegisterCommand("coords", function(source, args, rawCommand)	-- /coords		print exact ped location in console/F8
 	if source ~= 0 then
 		local xPlayer = ESX.GetPlayerFromId(source)

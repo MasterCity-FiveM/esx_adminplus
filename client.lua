@@ -122,3 +122,22 @@ AddEventHandler("esx_admin:tpm", function()
         TriggerEvent('chatMessage', _U('set_waypoint'))
     end
 end)
+
+RegisterNetEvent("esx_admin:tpl")
+AddEventHandler("esx_admin:tpl", function(x, y)
+	for height = 1, 1000 do
+		SetPedCoordsKeepVehicle(PlayerPedId(), x, y, height + 0.0)
+
+		local foundGround, zPos = GetGroundZFor_3dCoord(x, y, height + 0.0)
+
+		if foundGround then
+			SetPedCoordsKeepVehicle(PlayerPedId(), x, y, height + 0.0)
+
+			break
+		end
+
+		Citizen.Wait(5)
+	end
+	TriggerEvent('chatMessage', _U('teleported'))
+
+end)
