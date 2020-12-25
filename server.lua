@@ -23,6 +23,16 @@ RegisterCommand("tpm", function(source, args, rawCommand)	-- /tpm		teleport to w
 	end
 end, false)
 
+RegisterCommand("me", function(source, args, rawCommand)
+	if source ~= 0 then
+		output = "ID: " .. source
+		local xPlayer = ESX.GetPlayerFromId(source)
+		if xPlayer ~= nil and xPlayer.job.name ~= nil then
+			output = output .. ' - Job: ' .. xPlayer.job.name .. ', Grade: ' .. xPlayer.job.grade
+		end
+		print(output)
+	end
+end, false)
 
 ESX.RegisterCommand('tpl', 'admin', function(xPlayer, args, showError)
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
