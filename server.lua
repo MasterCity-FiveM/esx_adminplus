@@ -29,8 +29,12 @@ RegisterCommand("me", function(source, args, rawCommand)
 		local xPlayer = ESX.GetPlayerFromId(source)
 		if xPlayer ~= nil and xPlayer.job.name ~= nil then
 			output = output .. ' - Job: ' .. xPlayer.job.name .. ', Grade: ' .. xPlayer.job.grade
+			if xPlayer.job.job_sub ~= nil then
+				output = output .. ' - SubJob: ' .. xPlayer.job.job_sub
+			end
 		end
-		print(output)
+		
+		TriggerClientEvent('chatMessage', xPlayer.source, output)
 	end
 end, false)
 
