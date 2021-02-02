@@ -49,7 +49,8 @@ RegisterCommand("coords", function(source, args, rawCommand)	-- /coords		print e
 	if source ~= 0 then
 		local xPlayer = ESX.GetPlayerFromId(source)
 		if havePermission(xPlayer) then
-			print(GetEntityCoords(GetPlayerPed(source)))
+			print("Coords: " .. GetEntityCoords(GetPlayerPed(source)))
+			print("Heading: " .. GetEntityHeading(GetPlayerPed(source)))
 		end
 	end
 end, false)
