@@ -141,3 +141,8 @@ AddEventHandler("esx_admin:tpl", function(x, y)
 	TriggerEvent('chatMessage', _U('teleported'))
 
 end)
+
+RegisterNetEvent("esx_admin:az")
+AddEventHandler("esx_admin:az", function()
+	SetPedCoordsKeepVehicle(PlayerPedId(), -2824.681, 7027.042, 2184.085)
+end)

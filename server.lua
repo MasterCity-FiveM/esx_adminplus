@@ -38,6 +38,11 @@ RegisterCommand("me", function(source, args, rawCommand)
 	end
 end, false)
 
+ESX.RegisterCommand('az', 'admin', function(xPlayer)
+	TriggerClientEvent('esx_admin:az', xPlayer.source)
+end, true, {help = "Teleport to AdminZone", validate = true
+})
+
 ESX.RegisterCommand('tpl', 'admin', function(xPlayer, args, showError)
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
 end, true, {help = "Teleport to Location", validate = true, arguments = {
