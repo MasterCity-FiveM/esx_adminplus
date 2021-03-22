@@ -76,30 +76,6 @@ RegisterCommand("players", function(source, args, rawCommand)	-- players		show o
 	end
 end, false)
 
-RegisterCommand("report", function(source, args, rawCommand)	-- /report [MESSAGE]		send report message to all online admins
-  	local xPlayer = ESX.GetPlayerFromId(source)
-	if onTimer[source] and onTimer[source] > GetGameTimer() then
-		local timeLeft = (onTimer[source] - GetGameTimer()) / 1000
-		TriggerClientEvent('chatMessage', xPlayer.source, _U('report_cooldown', tostring(ESX.Math.Round(timeLeft))))
-		return
-	end
-	if args[1] then
-    	local message = string.sub(rawCommand, 8)
-    	local xAll = ESX.GetPlayers()
-    	for i=1, #xAll, 1 do
-      		local xTarget = ESX.GetPlayerFromId(xAll[i])
-      		if havePermission(xTarget) then		-- you can exclude some ranks to NOT reciveing reports
-        		if xPlayer.source ~= xTarget.source then
-		    		TriggerClientEvent('chatMessage', xTarget.source, _U('report', xPlayer.getName(), xPlayer.source, message))
-        		end
-      		end
-		end
-		TriggerClientEvent('chatMessage', xPlayer.source, _U('report', xPlayer.getName(), xPlayer.source, message))
-		onTimer[source] = GetGameTimer() + (Config.reportCooldown * 1000)
-	else
-		TriggerClientEvent('chatMessage', xPlayer.source, _U('invalid_input', 'REPORT'))
-	end
-end, false)
 ------------ announcement -------------
 RegisterCommand("announce", function(source, args, rawCommand)	-- /announce [MESSAGE]
 	if source ~= 0 then
