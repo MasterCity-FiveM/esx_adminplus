@@ -7,288 +7,162 @@ local savedCoords   = {}
 local warnedPlayers = {}
 local deadPlayers   = {}
 
-RegisterCommand("admin", function(source, args, rawCommand)
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		TriggerClientEvent('chatMessage', xPlayer.source, _U('your_rank', xPlayer.getGroup()))
-	end
-end, false)
+ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
+	TriggerClientEvent("esx_admin:tpm", xPlayer.source)
+end, {
+}, '.tpm', '.')
 
-RegisterCommand("tpm", function(source, args, rawCommand)	-- /tpm		teleport to waypoint
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if havePermission(xPlayer) then
-			TriggerClientEvent("esx_admin:tpm", xPlayer.source)
-		end
-	end
-end, false)
-
-RegisterCommand("me", function(source, args, rawCommand)
-	if source ~= 0 then
-		output = "ID: " .. source
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if xPlayer ~= nil and xPlayer.job.name ~= nil then
-			output = output .. ' - Job: ' .. xPlayer.job.name .. ', Grade: ' .. xPlayer.job.grade
-			if xPlayer.job.job_sub ~= nil then
-				output = output .. ' - SubJob: ' .. xPlayer.job.job_sub
-			end
-		end
-		
-		TriggerClientEvent('chatMessage', xPlayer.source, output)
-	end
-end, false)
-
-ESX.RegisterCommand('az', 'admin', function(xPlayer)
+ESX.RunCustomFunction("AddCommand", {"adminzone", "az"}, 1, function(xPlayer, args)
 	TriggerClientEvent('esx_admin:az', xPlayer.source)
-end, true, {help = "Teleport to AdminZone", validate = true
-})
+end, {
+}, '.az', '.')
 
-ESX.RegisterCommand('tpl', 'admin', function(xPlayer, args, showError)
+ESX.RunCustomFunction("AddCommand", "tpl", 1, function(xPlayer, args)
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
-end, true, {help = "Teleport to Location", validate = true, arguments = {
-	{name = 'x', help = 'X', type = 'number'},
-	{name = 'y', help = 'Y', type = 'number'}
-}})
+end, {
+	{name = 'x', type = 'number'},
+	{name = 'y', type = 'number'}
+}, '.tpl x y', '.')
 
-RegisterCommand("coords", function(source, args, rawCommand)	-- /coords		print exact ped location in console/F8
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if havePermission(xPlayer) then
-			print("Coords: " .. GetEntityCoords(GetPlayerPed(source)))
-			print("Heading: " .. GetEntityHeading(GetPlayerPed(source)))
+
+ESX.RunCustomFunction("AddCommand", "admin", 1, function(xPlayer, args)
+	TriggerClientEvent('chatMessage', xPlayer.source, _U('your_rank', xPlayer.getRank()))
+end, {
+}, '.admin', '.')
+
+ESX.RunCustomFunction("AddCommand", "info", 0, function(xPlayer, args)
+	output = "کدملی: " .. xPlayer.source
+
+	if xPlayer ~= nil and xPlayer.job.name ~= nil then
+		output = output .. ' - شغل: ' .. xPlayer.job.label_fa .. ', سطح: ' .. xPlayer.job.grade
+		if xPlayer.job.job_sub ~= nil then
+			output = output .. ' - شغل ثانویه: ' .. xPlayer.job.job_sub
 		end
 	end
-end, false)
+	
+	TriggerClientEvent('chatMessage', xPlayer.source, output)
+end, {
+}, '.info', '.')
 
-RegisterCommand("players", function(source, args, rawCommand)	-- players		show online players | console only
-	isPlayerOnline = false
-	if source == 0 then
-		local xAll = ESX.GetPlayers()
-		print("^2"..#xAll.." ^3online player(s)^0")
-		for i=1, #xAll, 1 do
-			local xPlayer = ESX.GetPlayerFromId(xAll[i])
-			print("^4[ ^2ID : ^3"..xPlayer.source.." ^0| ^2Name : ^3"..xPlayer.getName().." ^0 | ^2Group : ^3"..xPlayer.getGroup().." ^4]^0\n")
-			isPlayerOnline = true
-		end
-		if not isPlayerOnline then
-			print(_U('no_online'))
-		end
-	end
-end, false)
+ESX.RunCustomFunction("AddCommand", {"coords", "gps"}, 1, function(xPlayer, args)
+	output = "موقعیت: " .. GetEntityCoords(GetPlayerPed(xPlayer.source)) .. " - سمت: " .. GetEntityHeading(GetPlayerPed(xPlayer.source))
+	TriggerClientEvent('chatMessage', xPlayer.source, output)
+end, {
+}, '.coords', '.')
 
------------- announcement -------------
-RegisterCommand("announce", function(source, args, rawCommand)	-- /announce [MESSAGE]
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if args[1] then
-			local message = string.sub(rawCommand, 10)
-			if xPlayer then
-				if havePermission(xPlayer) then
-					TriggerClientEvent('chatMessage',-1 , _U('admin_announce', xPlayer.getName(), message))
-				end
-			end
-		else
-    		TriggerClientEvent('chatMessage', xPlayer.source, _U('invalid_input', 'ANNOUNCMENT'))
-	 	end
-	end
-end, false)
------------- Console Say -------------
-RegisterCommand("say", function(source, args, rawCommand)	-- say [message]		only for server console
-	if source == 0 then
-		if args[1] then
-			local message = string.sub(rawCommand, 4)
-			print("^1SERVER Announcement ^0: "..message)
-			TriggerClientEvent('chatMessage',-1 , _U('server_announce', message))
-		else
-			print(_U('invalid_input'))
-		end
-	end
-end, false)
----------- Bring / Bringback ----------
-RegisterCommand("bring", function(source, args, rawCommand)	-- /bring [ID]
-	if source ~= 0 then
-	  	local xPlayer = ESX.GetPlayerFromId(source)
-	  	if havePermission(xPlayer) then
-	    	if args[1] and tonumber(args[1]) then
-	      		local targetId = tonumber(args[1])
-	      		local xTarget = ESX.GetPlayerFromId(targetId)
-	      		if xTarget then
-	        		local targetCoords = xTarget.getCoords()
-	        		local playerCoords = xPlayer.getCoords()
-	        		savedCoords[targetId] = targetCoords
-	        		xTarget.setCoords(playerCoords)
-	        		TriggerClientEvent("chatMessage", xPlayer.source, _U('bring_adminside', args[1]))
-	        		TriggerClientEvent("chatMessage", xTarget.source, _U('bring_playerside'))
-	      		else
-	        		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'BRING'))
-	      		end
-	    	else
-	      		TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'BRING'))
-	    	end
-	  	end
-	end
-end, false)
+ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 1, function(xPlayer, args)
+	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', args.message))
+end, {
+	{name = 'message', type = 'full'}
+}, '.announce message', '.')
 
-RegisterCommand("bringback", function(source, args, rawCommand)	-- /bringback [ID] will teleport player back where he was before /bring
-	if source ~= 0 then
-  		local xPlayer = ESX.GetPlayerFromId(source)
-  		if havePermission(xPlayer) then
-    		if args[1] and tonumber(args[1]) then
-      			local targetId = tonumber(args[1])
-      			local xTarget = ESX.GetPlayerFromId(targetId)
-      			if xTarget then
-        			local playerCoords = savedCoords[targetId]
-        			if playerCoords then
-          			xTarget.setCoords(playerCoords)
-          			TriggerClientEvent("chatMessage", xPlayer.source, _U('bringback_admin', 'BRINGBACK', args[1]))
-          			TriggerClientEvent("chatMessage", xTarget.source,  _U('bringback_player', 'BRINGBACK'))
-          			savedCoords[targetId] = nil
-        		else
-          			TriggerClientEvent("chatMessage", xPlayer.source, _U('noplace_bring'))
-        			end
-      			else
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'BRINGBACK'))
-      			end
-    		else
-      			TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'BRINGBACK'))
-    		end
-  		end
-	end
-end, false)
+ESX.RunCustomFunction("AddCommand", {"bring", "sum"}, 1, function(xPlayer, args)
+	xTarget = args.playerId
+	local targetCoords = xTarget.getCoords()
+	local playerCoords = xPlayer.getCoords()
+	savedCoords[xTarget.source] = targetCoords
+	xTarget.setCoords(playerCoords)
+	TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bring_adminside', xTarget.source))
+	TriggerClientEvent("chatMessageAlert", xTarget.source, _U('bring_playerside'))
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.bring PlayerID', '.')
 
----------- goto/goback ----------
-RegisterCommand("goto", function(source, args, rawCommand)	-- /goto [ID]
-	if source ~= 0 then
-  		local xPlayer = ESX.GetPlayerFromId(source)
-  		if havePermission(xPlayer) then
-    		if args[1] and tonumber(args[1]) then
-      			local targetId = tonumber(args[1])
-      			local xTarget = ESX.GetPlayerFromId(targetId)
-      			if xTarget then
-        			local targetCoords = xTarget.getCoords()
-        			local playerCoords = xPlayer.getCoords()
-        			savedCoords[source] = playerCoords
-        			xPlayer.setCoords(targetCoords)
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('goto_admin', args[1]))
-					TriggerClientEvent("chatMessage", xTarget.source,  _U('goto_player'))
-      			else
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'GOTO'))
-      			end
-    		else
-      			TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'GOTO'))
-    		end
-  		end
+ESX.RunCustomFunction("AddCommand", {"bringback", "sumback"}, 1, function(xPlayer, args)
+	xTarget = args.playerId
+	local playerCoords = savedCoords[xTarget.source]
+	if playerCoords then
+		xTarget.setCoords(playerCoords)
+		TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bringback_admin', 'BRINGBACK', xTarget.source))
+		TriggerClientEvent("chatMessageAlert", xTarget.source,  _U('bringback_player', 'BRINGBACK'))
+		savedCoords[xTarget.source] = nil
 	end
-end, false)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.bringback PlayerID', '.')
 
-RegisterCommand("goback", function(source, args, rawCommand)	-- /goback will teleport you back where you was befor /goto
-	if source ~= 0 then
-	  	local xPlayer = ESX.GetPlayerFromId(source)
-	  	if havePermission(xPlayer) then
-	    	local playerCoords = savedCoords[source]
-	    	if playerCoords then
-	      		xPlayer.setCoords(playerCoords)
-				TriggerClientEvent("chatMessage", xPlayer.source, _U('goback'))
-	      		savedCoords[source] = nil
-	    	else
-	      		TriggerClientEvent("chatMessage", xPlayer.source, _U('goback_error'))
-	    	end
-	  	end
-	end
-end, false)
-
----------- Noclip --------
-RegisterCommand("noclip", function(source, args, rawCommand)	-- /goback will teleport you back where you was befor /goto
-	if source ~= 0 then
-	  	local xPlayer = ESX.GetPlayerFromId(source)
-	  	if havePermission(xPlayer) then
-	    	TriggerClientEvent("esx_admin:noclip", xPlayer.source)
-	  	end
-	end
-end, false)
----------- kill ----------
-RegisterCommand("kill", function(source, args, rawCommand)	-- /kill [ID]
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if havePermission(xPlayer) then
-			if args[1] and tonumber(args[1]) then
-				local targetId = tonumber(args[1])
-      			local xTarget = ESX.GetPlayerFromId(targetId)
-      			if xTarget then
-					TriggerClientEvent("esx_admin:killPlayer", xTarget.source)
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('kill_admin', targetId))
-					TriggerClientEvent('chatMessage', xTarget.source, _U('kill_by_admin'))
-      			else
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'KILL'))
-      			end
-    		else
-      			TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'KILL'))
-    		end
-  		end
-	end
-end, false)
-
----------- freeze/unfreeze ---------
-RegisterCommand("freeze", function(source, args, rawCommand)	-- /freeze [ID]
-	if source ~= 0 then
-  		local xPlayer = ESX.GetPlayerFromId(source)
-  		if havePermission(xPlayer) then
-    		if args[1] and tonumber(args[1]) then
-      			local targetId = tonumber(args[1])
-      			local xTarget = ESX.GetPlayerFromId(targetId)
-      			if xTarget then
-        			TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'freeze')
-					TriggerClientEvent("chatMessage", xPlayer.source, _U('freeze_admin', args[1]))
-					TriggerClientEvent("chatMessage", xTarget.source, _U('freeze_player'))
-      			else
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'FREEZE'))
-      			end
-    		else
-		      	TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'FREEZE'))
-    		end
-  		end
-	end
-end, false)
-
-RegisterCommand("unfreeze", function(source, args, rawCommand)	-- /unfreeze [ID]
-	if source ~= 0 then
-  		local xPlayer = ESX.GetPlayerFromId(source)
-  		if havePermission(xPlayer) then
-    		if args[1] and tonumber(args[1]) then
-      			local targetId = tonumber(args[1])
-      			local xTarget = ESX.GetPlayerFromId(targetId)
-      			if xTarget then
-        			TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'unfreeze')
-					TriggerClientEvent("chatMessage", xPlayer.source, _U('unfreeze_admin', args[1]))
-					TriggerClientEvent("chatMessage", xTarget.source, _U('unfreeze_player'))
-      			else
-        			TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'UNFREEZE'))
-      			end
-    		else
-      			TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'UNFREEZE'))
-    		end
-  		end
-	end
-end, false)
-
-RegisterCommand("reviveall", function(source, args, rawCommand)	-- reviveall (can be used from console)
-	canRevive = false
-	if source == 0 then
-		canRevive = true
+ESX.RunCustomFunction("AddCommand", {"goto", "app"}, 1, function(xPlayer, args)
+	local xTarget =args.playerId
+	if xTarget then
+		local targetCoords = xTarget.getCoords()
+		local playerCoords = xPlayer.getCoords()
+		savedCoords[xPlayer.source] = playerCoords
+		xPlayer.setCoords(targetCoords)
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('goto_admin', args[1]))
+		TriggerClientEvent("chatMessage", xTarget.source,  _U('goto_player'))
 	else
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if havePermission(xPlayer) then
-			canRevive = true
-		end
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'GOTO'))
 	end
-	if canRevive then
-		for i,data in pairs(deadPlayers) do
-			TriggerClientEvent('esx_ambulancejob:revive', i)
-		end
-	end
-end, false)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.goto PlayerID', '.')
 
-RegisterCommand("a", function(source, args, rawCommand)	-- /a command for adminchat
+ESX.RunCustomFunction("AddCommand", {"goback", "gotoback", "appback"}, 1, function(xPlayer, args)
+	local playerCoords = savedCoords[xPlayer.source]
+	if playerCoords then
+		xPlayer.setCoords(playerCoords)
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('goback'))
+		savedCoords[xPlayer.source] = nil
+	else
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('goback_error'))
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.gotoback PlayerID', '.')
+
+ESX.RunCustomFunction("AddCommand", {"noclip", "fly"}, 1, function(xPlayer, args)
+	TriggerClientEvent("esx_admin:noclip", xPlayer.source)
+end, {
+}, '.noclip', '.')
+
+ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 1, function(xPlayer, args)
+	local xTarget = args.playerId
+	if xTarget then
+		TriggerClientEvent("esx_admin:killPlayer", xTarget.source)
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('kill_admin', targetId))
+		TriggerClientEvent('chatMessage', xTarget.source, _U('kill_by_admin'))
+	else
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'KILL'))
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.slay PlayerID', '.')
+
+
+ESX.RunCustomFunction("AddCommand", "freeze", 1, function(xPlayer, args)
+	local xTarget = args.playerId
+	if xTarget then
+		TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'freeze')
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('freeze_admin', GetPlayerName(xTarget.source)))
+		TriggerClientEvent("chatMessage", xTarget.source, _U('freeze_player'))
+	else
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'FREEZE'))
+	end	
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.freeze PlayerID', '.')
+
+ESX.RunCustomFunction("AddCommand", "unfreeze", 1, function(xPlayer, args)
+	local xTarget = args.playerId
+	if xTarget then
+		TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'unfreeze')
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('unfreeze_admin', GetPlayerName(xTarget.source)))
+		TriggerClientEvent("chatMessage", xTarget.source, _U('unfreeze_player'))
+	else
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'UNFREEZE'))
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.unfreeze PlayerID', '.')
+
+ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 1, function(xPlayer, args)
+	for i,data in pairs(deadPlayers) do
+		TriggerClientEvent('esx_ambulancejob:revive', i)
+	end
+end, {
+}, '.reviveall', '.')
+
+ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
 	if source ~= 0 then
 		local xPlayer = ESX.GetPlayerFromId(source)
 		if havePermission(xPlayer) then
@@ -306,44 +180,137 @@ RegisterCommand("a", function(source, args, rawCommand)	-- /a command for adminc
 			end
 		end
 	end
-end, false)
+end, {
+	{name = 'Message', type = 'text'},
+}, '.a Message', '.')
 
-RegisterCommand("warn", function(source, args, rawCommand)	-- /warn [ID] , will warn player and kick if execeed max warns
-	if source ~= 0 then
-  		local xPlayer = ESX.GetPlayerFromId(source)
-  		if havePermission(xPlayer) then
-    		if args[1] and tonumber(args[1]) then
-					if source == tonumber(args[1]) then
-						TriggerClientEvent("chatMessage", xPlayer.source, _U('selfwarn'))
-					else
-      					local targetId = tonumber(args[1])
-      					local xTarget = ESX.GetPlayerFromId(targetId)
-      					if xTarget then
-							if havePermission(xTarget) then
-								TriggerClientEvent("chatMessage", xPlayer.source, _U('adminwarn'))
-								TriggerClientEvent("chatMessage", xTarget.source, _U('adminwarn_to', args[1],xPlayer.getName(), xPlayer.getGroup()))
-							else
-								local warnCount = warnedPlayers[targetId] or 1
-								if warnCount >= Config.warnMax then
-									DropPlayer(targetId, _U('warnkick'))
-									TriggerClientEvent("chatMessage", xPlayer.source, _U('playerkicked', args[1], warnCount, Config.warnMax))
-									warnedPlayers[targetId] = nil
-								else
-									TriggerClientEvent("chatMessage", xPlayer.source, _U('playerwarned', args[1], warnCount, Config.warnMax))
-									TriggerClientEvent("chatMessage", xTarget.source, _U('gotwarn', warnCount, Config.warnMax))
-									warnedPlayers[targetId] = warnCount + 1
-								end
-							end
-      					else
-        				TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'WARN'))
-      				end
-				end
-    		else
-      			TriggerClientEvent("chatMessage", xPlayer.source, _U('invalid_input', 'WARN'))
-    		end
-  		end
+-- EXTENDED COMMANDS
+ESX.RunCustomFunction("AddCommand", "goxyz", 1, function(xPlayer, args)
+	xPlayer.setCoords({x = args.x, y = args.y, z = args.z})
+end, {
+	{name = 'x', type = 'number'},
+	{name = 'y', type = 'number'},
+	{name = 'z', type = 'number'}
+}, '.setcoords x y z', '.')
+
+ESX.RunCustomFunction("AddCommand", "setjob", 10, function(xPlayer, args)
+	if ESX.DoesJobExist(args.job, args.grade) then
+		args.playerId.setJob(args.job, args.grade)
 	end
-end, false)
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'job', type = 'string'},
+	{name = 'grade', type = 'number'}
+}, '.setjob PlayerID Job Grade', '.')
+
+ESX.RunCustomFunction("AddCommand", {"setjobsub", "setsubjob", "setdivision"}, 10, function(xPlayer, args)
+	args.playerId.setJobSub(args.jobSub:upper())
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'jobSub', type = 'string'}
+}, '.setjobsub PlayerID jobSub', '.')
+
+ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
+	xPlayer.triggerEvent('esx:spawnVehicle', args.car)
+end, {
+	{name = 'car', type = 'any'},
+}, '.car model', '.')
+
+ESX.RunCustomFunction("AddCommand", "dv", 1, function(xPlayer, args)
+	xPlayer.triggerEvent('esx:deleteVehicle', args.radius)
+end, {
+	{name = 'radius', type = 'any'},
+}, '.dv radius(optional)', '.')
+
+ESX.RunCustomFunction("AddCommand", "setaccountmoney", 10, function(xPlayer, args)
+	if args.playerId.getAccount(args.account) then
+		args.playerId.setAccountMoney(args.account, args.amount)
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'account', type = 'string'},
+	{name = 'amount', type = 'number'}
+}, '.setaccountmoney PlayerID Account Amount', '.')
+
+ESX.RunCustomFunction("AddCommand", "giveaccountmoney", 10, function(xPlayer, args)
+	if args.playerId.getAccount(args.account) then
+		args.playerId.addAccountMoney(args.account, args.amount)
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'account', type = 'string'},
+	{name = 'amount', type = 'number'}
+}, '.giveaccountmoney PlayerID Account Amount', '.')
+
+ESX.RunCustomFunction("AddCommand", "giveitem", 1, function(xPlayer, args)
+	args.playerId.addInventoryItem(args.item, args.count)
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'item', type = 'item'},
+	{name = 'count', type = 'number'}
+}, '.giveitem PlayerID item count', '.')
+
+ESX.RunCustomFunction("AddCommand", "giveweapon", 1, function(xPlayer, args)
+	if not args.playerId.hasWeapon(args.weapon) then
+		xPlayer.addWeapon(args.weapon, args.ammo)
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'weapon', type = 'weapon'},
+	{name = 'ammo', type = 'number'}
+}, '.giveweapon PlayerID weapon ammo', '.')
+
+ESX.RunCustomFunction("AddCommand", {"clearinventory", "removeitems"}, 1, function(xPlayer, args)
+	for k,v in ipairs(args.playerId.inventory) do
+		if v.count > 0 then
+			args.playerId.setInventoryItem(v.name, 0)
+		end
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.clearinventory PlayerID', '.')
+
+ESX.RunCustomFunction("AddCommand", {"clearloadout", "removeguns"}, 1, function(xPlayer, args)
+	for k,v in ipairs(args.playerId.loadout) do
+		args.playerId.removeWeapon(v.name)
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.clearloadout PlayerID', '.')
+
+--[[
+ESX.RegisterCommand('setgroup', 'admin', function(xPlayer, args, showError)
+	args.playerId.setGroup(args.group)
+end, true, {help = _U('command_setgroup'), validate = true, arguments = {
+	{name = 'playerId', help = _U('commandgeneric_playerid'), type = 'player'},
+	{name = 'group', help = _U('command_setgroup_group'), type = 'string'},
+}})]]--
+
+ESX.RunCustomFunction("AddCommand", "save", 1, function(xPlayer, args)
+	print(('[ExtendedMode] [^2INFO^7] Manual player data save triggered for "%s"'):format(args.playerId.name))
+	ESX.SavePlayer(args.playerId, function(rowsChanged)
+		if rowsChanged ~= 0 then
+			print(('[ExtendedMode] [^2INFO^7] Saved player data for "%s"'):format(args.playerId.name))
+		else
+			print(('[ExtendedMode] [^3WARNING^7] Failed to save player data for "%s"! This may be caused by an internal error on the MySQL server.'):format(args.playerId.name))
+		end
+	end)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.save PlayerID', '.')
+
+ESX.RunCustomFunction("AddCommand", "saveall", 1, function(xPlayer, args)
+	print('[ExtendedMode] [^2INFO^7] Manual player data save triggered')
+	ESX.SavePlayers(function(result)
+		if result then
+			print('[ExtendedMode] [^2INFO^7] Saved all player data')
+		else
+			print('[ExtendedMode] [^3WARNING^7] Failed to save player data! This may be caused by an internal error on the MySQL server.')
+		end
+	end)
+end, {
+}, '.saveall', '.')
+
 
 ------------ functions and events ------------
 RegisterNetEvent('esx:onPlayerDeath')
@@ -373,24 +340,3 @@ AddEventHandler('esx:playerDropped', function(playerId, reason)
 		deadPlayers[playerId] = nil
 	end
 end)
-
-function havePermission(xPlayer, exclude)	-- you can exclude rank(s) from having permission to specific commands 	[exclude only take tables]
-	if exclude and type(exclude) ~= 'table' then exclude = nil;print("^3[esx_admin] ^1ERROR ^0exclude argument is not table..^0") end	-- will prevent from errors if you pass wrong argument
-
-	local playerGroup = xPlayer.getGroup()
-	for k,v in pairs(Config.adminRanks) do
-		if v == playerGroup then
-			if not exclude then
-				return true
-			else
-				for a,b in pairs(exclude) do
-					if b == v then
-						return false
-					end
-				end
-				return true
-			end
-		end
-	end
-	return false
-end
