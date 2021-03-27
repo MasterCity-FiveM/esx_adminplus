@@ -198,7 +198,9 @@ end, {
 }, '.a Message', '.')
 
 ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
+	playerId = args.playerId.source
 	DropPlayer(args.playerId.source, args.reason)
+	DropPlayer(playerId, ('You are kicked from the server by Game Masters, Reasons: %s'):format(args.reason))
 end, {
 	{name = 'playerId', type = 'player'},
 	{name = 'reason', type = 'full'},
@@ -262,11 +264,15 @@ end, {
 	{name = 'amount', type = 'number'}
 }, '.giveaccountmoney PlayerID Account Amount', '.')
 
-ESX.RunCustomFunction("AddCommand", "giveitem", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 1, function(xPlayer, args)
+	if ESX.Items[args.item] == nil then
+		TriggerClientEvent('chatMessage', xPlayer.source, "آیتم صحیح نیست.")
+		return
+	end
 	args.playerId.addInventoryItem(args.item, args.count)
 end, {
 	{name = 'playerId', type = 'player'},
-	{name = 'item', type = 'item'},
+	{name = 'item', type = 'string'},
 	{name = 'count', type = 'number'}
 }, '.giveitem PlayerID item count', '.')
 
