@@ -68,6 +68,19 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.bring PlayerID', '.')
 
+ESX.RunCustomFunction("AddCommand", {"bringall", "sumall"}, 10, function(xPlayer, args)
+	local playerCoords = xPlayer.getCoords()
+	local xAll = ESX.GetPlayers()
+	for i=1, #xAll, 1 do
+		local xTarget = ESX.GetPlayerFromId(xAll[i])
+		if xTarget then
+			xTarget.setCoords(playerCoords)
+			TriggerClientEvent("chatMessageAlert", xTarget.source, _U('bring_playerside'))
+		end
+	end
+end, {
+}, '.bringall', '.')
+
 ESX.RunCustomFunction("AddCommand", {"bringback", "sumback"}, 1, function(xPlayer, args)
 	xTarget = args.playerId
 	local playerCoords = savedCoords[xTarget.source]
@@ -184,6 +197,13 @@ end, {
 	{name = 'Message', type = 'text'},
 }, '.a Message', '.')
 
+ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
+	DropPlayer(args.playerId.source, args.reason)
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'reason', type = 'full'},
+}, '.kick PlayerID reason', '.')
+
 -- EXTENDED COMMANDS
 ESX.RunCustomFunction("AddCommand", "goxyz", 1, function(xPlayer, args)
 	xPlayer.setCoords({x = args.x, y = args.y, z = args.z})
@@ -193,7 +213,7 @@ end, {
 	{name = 'z', type = 'number'}
 }, '.setcoords x y z', '.')
 
-ESX.RunCustomFunction("AddCommand", "setjob", 10, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "setjob", 5, function(xPlayer, args)
 	if ESX.DoesJobExist(args.job, args.grade) then
 		args.playerId.setJob(args.job, args.grade)
 	end
@@ -278,13 +298,15 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.clearloadout PlayerID', '.')
 
---[[
-ESX.RegisterCommand('setgroup', 'admin', function(xPlayer, args, showError)
-	args.playerId.setGroup(args.group)
-end, true, {help = _U('command_setgroup'), validate = true, arguments = {
-	{name = 'playerId', help = _U('commandgeneric_playerid'), type = 'player'},
-	{name = 'group', help = _U('command_setgroup_group'), type = 'string'},
-}})]]--
+ESX.RunCustomFunction("AddCommand", "setrank", 10, function(xPlayer, args)
+	if args.rank >= 0 and args.rank <= 6 then
+		args.playerId.setRank(args.rank)
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'rank', type = 'number'},
+}, '.setrank PlayerID rank', '.')
+
 
 ESX.RunCustomFunction("AddCommand", "save", 1, function(xPlayer, args)
 	print(('[ExtendedMode] [^2INFO^7] Manual player data save triggered for "%s"'):format(args.playerId.name))
@@ -311,6 +333,20 @@ ESX.RunCustomFunction("AddCommand", "saveall", 1, function(xPlayer, args)
 end, {
 }, '.saveall', '.')
 
+ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
+	name = xPlayer.firstname .. ' ' .. xPlayer.lastname
+	
+	if xPlayer.get('aduty') and xPlayer.get('aduty') == true then
+		xPlayer.set('aduty', false)
+		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
+		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
+	else
+		xPlayer.set('aduty', true)
+		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
+		TriggerClientEvent("esx_admin:aduty", xPlayer.source, true, xPlayer.getRank())
+	end
+end, {
+}, '.aduty', '.')
 
 ------------ functions and events ------------
 RegisterNetEvent('esx:onPlayerDeath')

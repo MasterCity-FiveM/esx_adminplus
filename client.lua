@@ -1,4 +1,5 @@
 ESX = nil
+local godmode = false
 
 Citizen.CreateThread(function()
     while ESX == nil do
@@ -26,7 +27,6 @@ AddEventHandler("esx_admin:freezePlayer", function(input)
         SetPlayerInvincible(player, false)
     end
 end)
-
 
 
 -------- noclip --------------
@@ -145,4 +145,60 @@ end)
 RegisterNetEvent("esx_admin:az")
 AddEventHandler("esx_admin:az", function()
 	SetPedCoordsKeepVehicle(PlayerPedId(), -2824.681, 7027.042, 2184.085)
+end)
+
+function cleanPlayer(playerPed)
+    SetPedArmour(playerPed, 0)
+    ClearPedBloodDamage(playerPed)
+    ResetPedVisibleDamage(playerPed)
+    ClearPedLastWeaponDamage(playerPed)
+    ResetPedMovementClipset(playerPed, 0)
+end
+
+function setUniform(rank)
+    local playerPed = PlayerPedId()
+    
+    TriggerEvent('skinchanger:getSkin', function(skin)
+        if skin.sex == 0 then
+			TriggerEvent("skinchanger:loadClothes", skin, Config.Admin[rank].male)
+		else
+			TriggerEvent("skinchanger:loadClothes", skin, Config.Admin[rank].female)
+		end
+    end)
+end
+
+RegisterNetEvent("esx_admin:aduty")
+AddEventHandler("esx_admin:aduty", function(status, rank)
+    if status == true then
+        setUniform(rank)
+		godmode = true
+		Citizen.CreateThread(function() --Godmode
+			while godmode do
+				Citizen.Wait(1)
+
+				SetEntityInvincible(GetPlayerPed(-1), true)
+				SetPlayerInvincible(PlayerId(), true)
+				SetPedCanRagdoll(GetPlayerPed(-1), false)
+				ClearPedBloodDamage(GetPlayerPed(-1))
+				ResetPedVisibleDamage(GetPlayerPed(-1))
+				ClearPedLastWeaponDamage(GetPlayerPed(-1))
+				SetEntityProofs(GetPlayerPed(-1), true, true, true, true, true, true, true, true)
+				SetEntityOnlyDamagedByPlayer(GetPlayerPed(-1), false)
+				SetEntityCanBeDamaged(GetPlayerPed(-1), false)
+			end
+			
+			SetEntityInvincible(GetPlayerPed(-1), false)
+			SetPlayerInvincible(PlayerId(), false)
+			SetPedCanRagdoll(GetPlayerPed(-1), true)
+			ClearPedLastWeaponDamage(GetPlayerPed(-1))
+			SetEntityProofs(GetPlayerPed(-1), false, false, false, false, false, false, false, false)
+			SetEntityOnlyDamagedByPlayer(GetPlayerPed(-1), true)
+			SetEntityCanBeDamaged(GetPlayerPed(-1), true)
+		end)
+    else
+		godmode = false
+		ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+            TriggerEvent('skinchanger:loadSkin', skin)
+        end)
+    end 
 end)
