@@ -36,7 +36,7 @@ AddEventHandler("esx_admin:noclip", function(input)
     local player = PlayerId()
 	local ped = PlayerPedId
 	
-    local msg = "disabled"
+    local msg = "غیرفعال"
 	if(noclip == false)then
 		noclip_pos = GetEntityCoords(PlayerPedId(), false)
 	end
@@ -44,10 +44,10 @@ AddEventHandler("esx_admin:noclip", function(input)
 	noclip = not noclip
 
 	if(noclip)then
-		msg = "enabled"
+		msg = "فعال"
 	end
 
-	TriggerEvent("chatMessage", "Noclip has been ^2^*" .. msg)
+	TriggerEvent("chatMessage", "حالت نو کلیپ: " .. msg)
 	end)
 	
 	local heading = 0

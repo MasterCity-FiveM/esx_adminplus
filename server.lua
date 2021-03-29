@@ -8,16 +8,19 @@ local warnedPlayers = {}
 local deadPlayers   = {}
 
 ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpm', "")
 	TriggerClientEvent("esx_admin:tpm", xPlayer.source)
 end, {
 }, '.tpm', '.')
 
 ESX.RunCustomFunction("AddCommand", {"adminzone", "az"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .az', "")
 	TriggerClientEvent('esx_admin:az', xPlayer.source)
 end, {
 }, '.az', '.')
 
 ESX.RunCustomFunction("AddCommand", "tpl", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpl', "Coords ->\nX: **" .. args.x .. "**\nY: **" .. args.y .. "**")
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
 end, {
 	{name = 'x', type = 'number'},
@@ -51,6 +54,7 @@ end, {
 }, '.coords', '.')
 
 ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**")
 	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', args.message))
 end, {
 	{name = 'message', type = 'full'}
@@ -58,17 +62,19 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"bring", "sum"}, 1, function(xPlayer, args)
 	xTarget = args.playerId
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .bring', "Target: **" .. GetPlayerName(xTarget.source) .. "**")
 	local targetCoords = xTarget.getCoords()
 	local playerCoords = xPlayer.getCoords()
 	savedCoords[xTarget.source] = targetCoords
 	xTarget.setCoords(playerCoords)
-	TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bring_adminside', xTarget.source))
+	TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bring_adminside', GetPlayerName(xTarget.source)))
 	TriggerClientEvent("chatMessageAlert", xTarget.source, _U('bring_playerside'))
 end, {
 	{name = 'playerId', type = 'player'},
 }, '.bring PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"bringall", "sumall"}, 10, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .bringall', "")
 	local playerCoords = xPlayer.getCoords()
 	local xAll = ESX.GetPlayers()
 	for i=1, #xAll, 1 do
@@ -83,10 +89,11 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"bringback", "sumback"}, 1, function(xPlayer, args)
 	xTarget = args.playerId
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .bringback', "Target: **" .. GetPlayerName(xTarget.source) .. "**")
 	local playerCoords = savedCoords[xTarget.source]
 	if playerCoords then
 		xTarget.setCoords(playerCoords)
-		TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bringback_admin', 'BRINGBACK', xTarget.source))
+		TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bringback_admin', 'BRINGBACK', GetPlayerName(xTarget.source)))
 		TriggerClientEvent("chatMessageAlert", xTarget.source,  _U('bringback_player', 'BRINGBACK'))
 		savedCoords[xTarget.source] = nil
 	end
@@ -95,13 +102,15 @@ end, {
 }, '.bringback PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"goto", "app"}, 1, function(xPlayer, args)
+
 	local xTarget =args.playerId
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .goto', "Target: **" .. GetPlayerName(xTarget.source) .. "**")
 	if xTarget then
 		local targetCoords = xTarget.getCoords()
 		local playerCoords = xPlayer.getCoords()
 		savedCoords[xPlayer.source] = playerCoords
 		xPlayer.setCoords(targetCoords)
-		TriggerClientEvent("chatMessage", xPlayer.source, _U('goto_admin', args[1]))
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('goto_admin', GetPlayerName(xTarget.source)))
 		TriggerClientEvent("chatMessage", xTarget.source,  _U('goto_player'))
 	else
 		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'GOTO'))
@@ -111,6 +120,7 @@ end, {
 }, '.goto PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"goback", "gotoback", "appback"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .goback', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	local playerCoords = savedCoords[xPlayer.source]
 	if playerCoords then
 		xPlayer.setCoords(playerCoords)
@@ -124,15 +134,17 @@ end, {
 }, '.gotoback PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"noclip", "fly"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .noclip', "")
 	TriggerClientEvent("esx_admin:noclip", xPlayer.source)
 end, {
 }, '.noclip', '.')
 
 ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	local xTarget = args.playerId
 	if xTarget then
 		TriggerClientEvent("esx_admin:killPlayer", xTarget.source)
-		TriggerClientEvent("chatMessage", xPlayer.source, _U('kill_admin', targetId))
+		TriggerClientEvent("chatMessage", xPlayer.source, _U('kill_admin', GetPlayerName(xTarget.source)))
 		TriggerClientEvent('chatMessage', xTarget.source, _U('kill_by_admin'))
 	else
 		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'KILL'))
@@ -143,6 +155,7 @@ end, {
 
 
 ESX.RunCustomFunction("AddCommand", "freeze", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .freeze', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	local xTarget = args.playerId
 	if xTarget then
 		TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'freeze')
@@ -156,6 +169,7 @@ end, {
 }, '.freeze PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", "unfreeze", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .unfreeze', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	local xTarget = args.playerId
 	if xTarget then
 		TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'unfreeze')
@@ -169,6 +183,7 @@ end, {
 }, '.unfreeze PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .reviveall', "")
 	for i,data in pairs(deadPlayers) do
 		TriggerClientEvent('esx_ambulancejob:revive', i)
 	end
@@ -176,31 +191,25 @@ end, {
 }, '.reviveall', '.')
 
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
-	if source ~= 0 then
-		local xPlayer = ESX.GetPlayerFromId(source)
-		if havePermission(xPlayer) then
-			if args[1] then
-				local message = string.sub(rawCommand, 3)
-				local xAll = ESX.GetPlayers()
-				for i=1, #xAll, 1 do
-					local xTarget = ESX.GetPlayerFromId(xAll[i])
-					if havePermission(xTarget) then
-						TriggerClientEvent('chatMessage', xTarget.source, _U('adminchat', xPlayer.getName(), xPlayer.getGroup(), message))
-					end
-				end
-			else
-				TriggerClientEvent('chatMessage', xPlayer.source, _U('invalid_input', 'AdminChat'))
-			end
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**")
+	local message = args.Message
+	local xAll = ESX.GetPlayers()
+	for i=1, #xAll, 1 do
+		local xTarget = ESX.GetPlayerFromId(xAll[i])
+		if xTarget.getRank() > 0 and xPlayer.source ~= xTarget.source then
+			TriggerClientEvent("pNotify:SendNotification", xTarget.source, { text =  GetPlayerName(xPlayer.source) .. ': ' .. message, type = "error", timeout = 5000, layout = "topLeft"})
+			TriggerClientEvent('chatMessageError', xTarget.source, GetPlayerName(xPlayer.source), message)
 		end
 	end
 end, {
-	{name = 'Message', type = 'text'},
+	{name = 'Message', type = 'full'},
 }, '.a Message', '.')
 
 ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kick', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nReason: **" .. args.reason .. "**")
 	playerId = args.playerId.source
-	DropPlayer(args.playerId.source, args.reason)
-	DropPlayer(playerId, ('You are kicked from the server by Game Masters, Reasons: %s'):format(args.reason))
+	--DropPlayer(args.playerId.source, args.reason)
+	DropPlayer(playerId, ('You have been kicked from the server by Game Masters, Reason: %s'):format(args.reason))
 end, {
 	{name = 'playerId', type = 'player'},
 	{name = 'reason', type = 'full'},
@@ -208,6 +217,7 @@ end, {
 
 -- EXTENDED COMMANDS
 ESX.RunCustomFunction("AddCommand", "goxyz", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .goxyz', "Coords ->\nX: **" .. args.x .. "**\nY: **" .. args.y .. "**\nZ: **" .. args.z .. "**")
 	xPlayer.setCoords({x = args.x, y = args.y, z = args.z})
 end, {
 	{name = 'x', type = 'number'},
@@ -216,6 +226,7 @@ end, {
 }, '.setcoords x y z', '.')
 
 ESX.RunCustomFunction("AddCommand", "setjob", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setjob', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nJob: **" .. args.job .. "**\nGrade: **" .. args.grade .. "**")
 	if ESX.DoesJobExist(args.job, args.grade) then
 		args.playerId.setJob(args.job, args.grade)
 	end
@@ -226,6 +237,7 @@ end, {
 }, '.setjob PlayerID Job Grade', '.')
 
 ESX.RunCustomFunction("AddCommand", {"setjobsub", "setsubjob", "setdivision"}, 10, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setjobsub', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nJobSub: **" .. args.jobSub .. "**")
 	args.playerId.setJobSub(args.jobSub:upper())
 end, {
 	{name = 'playerId', type = 'player'},
@@ -233,18 +245,24 @@ end, {
 }, '.setjobsub PlayerID jobSub', '.')
 
 ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .car', "Car: **" .. args.car .. "**")
 	xPlayer.triggerEvent('esx:spawnVehicle', args.car)
 end, {
 	{name = 'car', type = 'any'},
 }, '.car model', '.')
 
 ESX.RunCustomFunction("AddCommand", "dv", 1, function(xPlayer, args)
+	if args.radius == nil then
+		args.radius = 'Self(0)'
+	end
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .dv', "Radius: **" .. args.radius .. "**")
 	xPlayer.triggerEvent('esx:deleteVehicle', args.radius)
 end, {
 	{name = 'radius', type = 'any'},
 }, '.dv radius(optional)', '.')
 
 ESX.RunCustomFunction("AddCommand", "setaccountmoney", 10, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setaccountmoney', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nAccount: **" .. args.account .. "**\n Amount: **" .. args.amount .. "**")
 	if args.playerId.getAccount(args.account) then
 		args.playerId.setAccountMoney(args.account, args.amount)
 	end
@@ -255,6 +273,7 @@ end, {
 }, '.setaccountmoney PlayerID Account Amount', '.')
 
 ESX.RunCustomFunction("AddCommand", "giveaccountmoney", 10, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .giveaccountmoney', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nAccount: **" .. args.account .. "**\n Amount: **" .. args.amount .. "**")
 	if args.playerId.getAccount(args.account) then
 		args.playerId.addAccountMoney(args.account, args.amount)
 	end
@@ -265,18 +284,16 @@ end, {
 }, '.giveaccountmoney PlayerID Account Amount', '.')
 
 ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 1, function(xPlayer, args)
-	if ESX.Items[args.item] == nil then
-		TriggerClientEvent('chatMessage', xPlayer.source, "آیتم صحیح نیست.")
-		return
-	end
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveitem', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Item: **" .. args.item .. "**\n Count: **" .. args.count .. "**")
 	args.playerId.addInventoryItem(args.item, args.count)
 end, {
 	{name = 'playerId', type = 'player'},
-	{name = 'item', type = 'string'},
+	{name = 'item', type = 'item'},
 	{name = 'count', type = 'number'}
 }, '.giveitem PlayerID item count', '.')
 
 ESX.RunCustomFunction("AddCommand", "giveweapon", 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
 		xPlayer.addWeapon(args.weapon, args.ammo)
 	end
@@ -287,6 +304,7 @@ end, {
 }, '.giveweapon PlayerID weapon ammo', '.')
 
 ESX.RunCustomFunction("AddCommand", {"clearinventory", "removeitems"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearinventory', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.inventory) do
 		if v.count > 0 then
 			args.playerId.setInventoryItem(v.name, 0)
@@ -297,6 +315,7 @@ end, {
 }, '.clearinventory PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"clearloadout", "removeguns"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearloadout', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.loadout) do
 		args.playerId.removeWeapon(v.name)
 	end
@@ -305,6 +324,7 @@ end, {
 }, '.clearloadout PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", "setrank", 10, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setrank', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Rank: **" .. args.rank .. "**")
 	if args.rank >= 0 and args.rank <= 6 then
 		args.playerId.setRank(args.rank)
 	end
@@ -340,16 +360,19 @@ end, {
 }, '.saveall', '.')
 
 ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
-	name = xPlayer.firstname .. ' ' .. xPlayer.lastname
+	--name = xPlayer.firstname .. ' ' .. xPlayer.lastname
+	name = GetPlayerName(xPlayer.source)
 	
 	if xPlayer.get('aduty') and xPlayer.get('aduty') == true then
 		xPlayer.set('aduty', false)
 		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
+		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
 	else
 		xPlayer.set('aduty', true)
 		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, true, xPlayer.getRank())
+		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** On Duty **")
 	end
 end, {
 }, '.aduty', '.')

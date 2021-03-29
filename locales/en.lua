@@ -24,7 +24,6 @@ Locales['en'] = {
   ['freeze_player']    = 'شما توسط یک گیم مستر فیریز شدید!',
   ['unfreeze_admin']   = 'بازیکن [%s] از فیریز خارج شد!',
   ['unfreeze_player']  = 'شما توسط گیم مستر از فیریز خارج شدید!',
-  ['adminchat']        = 'چت ادمینی [%s | %s] : %s',
   ['selfwarn']         = '[WARN] : You cant warn yourself!', -- نداریم
   ['adminwarn']        = '[WARN] : you cant warn other admins', -- نداریم
   ['adminwarn_to']     = '[WARN] : [%s | %s | %s] tried to warn  you', -- نداریم
