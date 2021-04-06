@@ -190,6 +190,21 @@ ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 1, function(xPlayer
 end, {
 }, '.reviveall', '.')
 
+
+ESX.RunCustomFunction("AddCommand", "selfrevive", 1, function(xPlayer, args)
+	TriggerClientEvent('esx_ambulancejob:revive', xPlayer.source)
+end, {
+}, '.selfrevive', '.')
+
+ESX.RunCustomFunction("AddCommand", "selfheal", 1, function(xPlayer, args)
+	TriggerClientEvent('esx_basicneeds:healPlayer', xPlayer.source)
+end, {}, '.selfheal', '.')
+
+ESX.RunCustomFunction("AddCommand", {"fix", "repair"}, 1, function(xPlayer, args)
+	TriggerClientEvent('esx_admin:carfix', xPlayer.source)
+	TriggerClientEvent('esx_admin:carclean', xPlayer.source)
+end, {}, '.fix', '.')
+
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**")
 	local message = args.Message
@@ -204,6 +219,71 @@ ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPl
 end, {
 	{name = 'Message', type = 'full'},
 }, '.a Message', '.')
+
+ESX.RunCustomFunction("AddCommand", "me", 0, function(xPlayer, args)
+	local msg = args.action
+	message = {}
+	message.sender = 0
+	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	message.message_type = 'local'
+	message.message = msg
+	message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (ME)"
+	message.name = message.name:gsub("<", "")
+	message.name = message.name:gsub(">", "")
+	message.range = 15
+	TriggerClientEvent("master_chat:reciveMessage", -1, message)
+end, {
+	{name = 'action', type = 'full'},
+}, '/me action', '/')
+
+ESX.RunCustomFunction("AddCommand", "do", 0, function(xPlayer, args)
+	local msg = args.action
+	message = {}
+	message.sender = 0
+	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	message.message_type = 'local'
+	message.message = msg
+	message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (DO)"
+	message.name = message.name:gsub("<", "")
+	message.name = message.name:gsub(">", "")
+	message.range = 15
+	TriggerClientEvent("master_chat:reciveMessage", -1, message)
+end, {
+	{name = 'action', type = 'full'},
+}, '/do action', '/')
+
+ESX.RunCustomFunction("AddCommand", {"ooc", "b"}, 0, function(xPlayer, args)
+	local msg = args.action
+	message = {}
+	message.sender = 0
+	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	message.message_type = 'local'
+	message.message = msg
+	message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (OOC)"
+	message.name = message.name:gsub("<", "")
+	message.name = message.name:gsub(">", "")
+	message.range = 15
+	TriggerClientEvent("master_chat:reciveMessage", -1, message)
+end, {
+	{name = 'action', type = 'full'},
+}, '/ooc action', '/')
+
+
+ESX.RunCustomFunction("AddCommand", {"s", "yell", "y"}, 0, function(xPlayer, args)
+	local msg = args.action
+	message = {}
+	message.sender = 0
+	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	message.message_type = 'local'
+	message.message = msg
+	message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (YELL)"
+	message.name = message.name:gsub("<", "")
+	message.name = message.name:gsub(">", "")
+	message.range = 25
+	TriggerClientEvent("master_chat:reciveMessage", -1, message)
+end, {
+	{name = 'action', type = 'full'},
+}, '/ooc action', '/')
 
 ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kick', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nReason: **" .. args.reason .. "**")

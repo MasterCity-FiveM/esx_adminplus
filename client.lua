@@ -13,6 +13,26 @@ AddEventHandler("esx_admin:killPlayer", function()
   SetEntityHealth(PlayerPedId(), 0)
 end)
 
+RegisterNetEvent('esx_admin:carfix')
+AddEventHandler('esx_admin:carfix', function()
+	local playerPed = GetPlayerPed(-1)
+	if IsPedInAnyVehicle(playerPed, false) then
+		local vehicle = GetVehiclePedIsIn(playerPed, false)
+		SetVehicleEngineHealth(vehicle, 1000)
+		SetVehicleEngineOn( vehicle, true, true )
+		SetVehicleFixed(vehicle)
+	end
+end)
+
+RegisterNetEvent('esx_admin:carclean')
+AddEventHandler('esx_admin:carclean', function()
+	local playerPed = GetPlayerPed(-1)
+	if IsPedInAnyVehicle(playerPed, false) then
+		local vehicle = GetVehiclePedIsIn(playerPed, false)
+		SetVehicleDirtLevel(vehicle, 0)
+	end
+end)
+
 RegisterNetEvent("esx_admin:freezePlayer")
 AddEventHandler("esx_admin:freezePlayer", function(input)
     local player = PlayerId()
