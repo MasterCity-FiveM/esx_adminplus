@@ -1,6 +1,20 @@
 ESX = nil
 local godmode = false
 
+
+---- DRIFT Configs
+local kmh = 3.6
+local mph = 2.23693629
+local carspeed = 0
+-----------------
+--   E D I T   --
+-----------------
+local driftmode = false -- on/off speed
+local speed = kmh -- or mph
+local drift_speed_limit = 100.0 
+local toggle = 118 -- Numpad 9
+---- DRIFT Configs
+
 Citizen.CreateThread(function()
     while ESX == nil do
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
@@ -8,6 +22,45 @@ Citizen.CreateThread(function()
     end
 end)
 ----------------------------------------------------------------------------------
+
+
+TriggerEvent('chat:addSuggestion', '/drift_on', 'Drift On', {})
+RegisterCommand('drift_on', function(source, args, raw)
+	driftmode = true
+	DriftOn()
+end)
+
+TriggerEvent('chat:addSuggestion', '/drift_off', 'Drift off', {})
+RegisterCommand('drift_off', function(source, args, raw)
+	driftmode = false
+end)
+
+function DriftOn()
+	Citizen.CreateThread(function()
+		while driftmode do
+			Citizen.Wait(1)
+			if IsPedInAnyVehicle(GetPlayerPed(-1) , false) then
+				CarSpeed = GetEntitySpeed(GetCar()) * speed
+				if GetPedInVehicleSeat(GetCar(), -1) == GetPlayerPed(-1)  then
+					if CarSpeed <= drift_speed_limit then 
+						if IsControlPressed(1, 21) then
+							SetVehicleReduceGrip(GetCar(), true)
+						else
+							SetVehicleReduceGrip(GetCar(), false)
+						end
+					end
+				else
+					driftmode = false
+				end
+			else
+				driftmode = false
+			end
+		end
+	end)
+end
+
+function GetCar() return GetVehiclePedIsIn(GetPlayerPed(-1),false) end
+
 RegisterNetEvent("esx_admin:killPlayer")
 AddEventHandler("esx_admin:killPlayer", function()
   SetEntityHealth(PlayerPedId(), 0)
@@ -48,6 +101,52 @@ AddEventHandler("esx_admin:freezePlayer", function(input)
     end
 end)
 
+TriggerEvent('chat:addSuggestion', '/record_editor', 'Open Editor', {})
+RegisterCommand('record_editor', function(source, args, raw)
+	TriggerEvent("masterking32:closeAllUI")
+	NetworkSessionLeaveSinglePlayer()
+	ActivateRockstarEditor()
+end)
+
+TriggerEvent('chat:addSuggestion', '/record_start', 'Start Recording', {})
+RegisterCommand('record_start', function(source, args, raw)
+	if not IsRecording() then
+		TriggerEvent("masterking32:closeAllUI")
+		StartRecording(1)
+	else
+		TriggerEvent("chatMessage", "شما در حال ضبط می باشید!")
+	end
+end)
+
+TriggerEvent('chat:addSuggestion', '/record_startreplay', 'Start Recording Replay', {})
+RegisterCommand('record_startreplay', function(source, args, raw)
+	if not IsRecording() then
+		TriggerEvent("masterking32:closeAllUI")
+		StartRecording(0)
+	else
+		TriggerEvent("chatMessage", "شما در حال ضبط می باشید!")
+	end
+end)
+
+TriggerEvent('chat:addSuggestion', '/record_discard', 'Discard Recording', {})
+RegisterCommand('record_discard', function(source, args, raw)
+	if IsRecording() then
+		TriggerEvent("masterking32:closeAllUI")
+		StopRecordingAndDiscardClip()
+	else
+		TriggerEvent("chatMessage", "ابتدا ضبط را شروع کنید!")
+	end
+end)
+
+TriggerEvent('chat:addSuggestion', '/record_save', 'Save Recording', {})
+RegisterCommand('record_save', function(source, args, raw)
+	if IsRecording() then
+		TriggerEvent("masterking32:closeAllUI")
+		StopRecordingAndSaveClip()
+	else
+		TriggerEvent("chatMessage", "ابتدا ضبط را شروع کنید!")
+	end
+end)
 
 -------- noclip --------------
 local noclip = false
