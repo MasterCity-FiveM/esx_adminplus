@@ -191,12 +191,12 @@ end, {
 }, '.reviveall', '.')
 
 
-ESX.RunCustomFunction("AddCommand", "selfrevive", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"selfrevive", "selfrev", "srevive", "srev"}, 1, function(xPlayer, args)
 	TriggerClientEvent('esx_ambulancejob:revive', xPlayer.source)
 end, {
 }, '.selfrevive', '.')
 
-ESX.RunCustomFunction("AddCommand", "selfheal", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"selfheal", "sheal"}, 1, function(xPlayer, args)
 	TriggerClientEvent('esx_basicneeds:healPlayer', xPlayer.source)
 end, {}, '.selfheal', '.')
 
