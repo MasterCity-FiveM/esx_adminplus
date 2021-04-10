@@ -3,6 +3,37 @@ Config.Locale = 'en'
 Config.reportCooldown = 60 --seconds
 Config.warnMax = 3  --how many warn player can get before getting kicked?
 
+Config.TeleportLocations = {
+	['pd'] = {x = 425.0901, y = -979.5033},          -- Edare PD
+	['police'] = {x = 425.0901, y = -979.5033},      -- Edare PD
+	
+	['md'] = {x = 281.6176, y = -566.8483},          -- Bimarestan Markazi
+	['medic'] = {x = 281.6176, y = -566.8483},       -- Bimarestan Markazi
+	['fbi'] = {x = 93.66594, y = -742.7736},         -- FBI
+	
+	['parking'] = {x = 233.2088, y = -763.3187},     -- Parking Markazi
+	
+	['bankmarkazi'] = {x = 235.2659, y = 216.8835},  -- Bank Markazi
+	['bank'] = {x = 235.2659, y = 216.8835},         -- Bank Markazi
+	['mechanic'] = {x = -369.8506, y = -130.9187},   -- Mechanic
+	
+	['carshop'] = {x = -36.8967, y = -1105.635},     -- Carshop
+	
+	['dadgostari'] = {x = 243.0989, y = -1071.429},  -- Dadgostari
+	['doj'] = {x = 243.0989, y = -1071.429},         -- Dadgostari
+	
+	['mine'] = {x = -596.9539, y = 2092.497},        -- Mining Job Location
+	
+	['sheriff'] = {x = 1849.833, y = 3672.607},      -- Edare Sheriff
+	['sd'] = {x = 1849.833, y = 3672.607},           -- Edare Sheriff
+	
+	['istsheriff'] = {x = 1284.541, y = 592.1275},   -- Ist Bazresi Sheriff
+	['istsd'] = {x = 1284.541, y = 592.1275},        -- Ist Bazresi Sheriff
+	['ist'] = {x = 1284.541, y = 592.1275},          -- Ist Bazresi Sheriff
+	
+	['prison'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
+	['zendan'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
+}
 
 Config.Admin = {
     [10] = {
