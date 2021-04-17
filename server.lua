@@ -297,10 +297,12 @@ end, {
 }, '/ooc action', '/')
 
 ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kick', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nReason: **" .. args.reason .. "**")
-	playerId = args.playerId.source
-	--DropPlayer(args.playerId.source, args.reason)
-	DropPlayer(playerId, ('You have been kicked from the server by Game Masters, Reason: %s'):format(args.reason))
+	if args.playerId.getRank() < xPlayer.getRank() then
+		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kick', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nReason: **" .. args.reason .. "**")
+		playerId = args.playerId.source
+		--DropPlayer(args.playerId.source, args.reason)
+		DropPlayer(playerId, ('You have been kicked from the server by Game Masters, Reason: %s'):format(args.reason))
+	end
 end, {
 	{name = 'playerId', type = 'player'},
 	{name = 'reason', type = 'full'},
