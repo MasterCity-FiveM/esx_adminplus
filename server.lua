@@ -65,7 +65,7 @@ end, {
 }, '.coords', '.')
 
 ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**", "14249563")
 	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', args.message))
 end, {
 	{name = 'message', type = 'full'}
@@ -151,7 +151,7 @@ end, {
 }, '.noclip', '.')
 
 ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**", "14249563")
 	local xTarget = args.playerId
 	if xTarget then
 		TriggerClientEvent("esx_admin:killPlayer", xTarget.source)
@@ -194,7 +194,7 @@ end, {
 }, '.unfreeze PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .reviveall', "")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .reviveall', "-", "14249563")
 	for i,data in pairs(deadPlayers) do
 		TriggerClientEvent('esx_ambulancejob:revive', i)
 	end
@@ -217,7 +217,7 @@ ESX.RunCustomFunction("AddCommand", {"fix", "repair"}, 1, function(xPlayer, args
 end, {}, '.fix', '.')
 
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**", "908890")
 	local message = args.Message
 	local xAll = ESX.GetPlayers()
 	for i=1, #xAll, 1 do
@@ -233,6 +233,7 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", "me", 0, function(xPlayer, args)
 	local msg = args.action
+	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /me', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
 	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
@@ -249,6 +250,7 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", "do", 0, function(xPlayer, args)
 	local msg = args.action
+	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /do', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
 	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
@@ -265,6 +267,7 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"ooc", "b"}, 0, function(xPlayer, args)
 	local msg = args.action
+	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /ooc', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
 	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
@@ -282,6 +285,7 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"s", "yell", "y"}, 0, function(xPlayer, args)
 	local msg = args.action
+	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /s (/y)', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
 	message.coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
@@ -301,7 +305,7 @@ ESX.RunCustomFunction("AddCommand", "kick", 1, function(xPlayer, args)
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kick', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nReason: **" .. args.reason .. "**")
 		playerId = args.playerId.source
 		--DropPlayer(args.playerId.source, args.reason)
-		DropPlayer(playerId, ('You have been kicked from the server by Game Masters, Reason: %s'):format(args.reason))
+		DropPlayer(playerId, ('You have been kicked from the server by Game Masters\n Reason: %s'):format(args.reason))
 	end
 end, {
 	{name = 'playerId', type = 'player'},
