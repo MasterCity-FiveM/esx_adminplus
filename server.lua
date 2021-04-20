@@ -6,7 +6,8 @@ local onTimer       = {}
 local savedCoords   = {}
 local warnedPlayers = {}
 local deadPlayers   = {}
-
+local AdminAdutyList = {}
+local StreamerList = {}
 ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpm', "")
 	TriggerClientEvent("esx_admin:tpm", xPlayer.source)
@@ -461,11 +462,13 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 	name = GetPlayerName(xPlayer.source)
 	
 	if xPlayer.get('aduty') and xPlayer.get('aduty') == true then
+		AdminAdutyList[xPlayer.source] = nil
 		xPlayer.set('aduty', false)
 		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
 	else
+		AdminAdutyList[xPlayer.source] = name
 		xPlayer.set('aduty', true)
 		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, true, xPlayer.getRank())
@@ -474,7 +477,49 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 end, {
 }, '.aduty', '.')
 
+ESX.RunCustomFunction("AddCommand", {"streamer", "stream"}, 0, function(xPlayer, args)
+	name = GetPlayerName(xPlayer.source)
+	
+	MySQL.Async.fetchAll('SELECT isStreamer FROM users WHERE identifier = @identifier', {
+		['@identifier'] = xPlayer.identifier,
+	}, function(results)
+		if #results ~= 0 and results[1].isStreamer > 0 then
+			if StreamerList[xPlayer.source] ~= nil then
+				StreamerList[xPlayer.source] = nil
+				TriggerClientEvent("IDAboveHead:streamer", -1, false, xPlayer.source, name)
+			else
+				StreamerList[xPlayer.source] = name
+				TriggerClientEvent("IDAboveHead:streamer", -1, true, xPlayer.source, name)
+			end
+		else
+			TriggerClientEvent('chatMessage', xPlayer.source, 'شما استریمر نیستید.')
+		end
+	end)
+end, {
+}, '.streamer', '.')
+
+ESX.RunCustomFunction("AddCommand", "setstreamer", 5, function(xPlayer, args)
+	if args.isStreamer == 0 or args.isStreamer == 1 then
+		MySQL.Async.execute('UPDATE users SET `isStreamer` = @isStreamer WHERE identifier = @identifier', {
+			['@identifier'] = args.playerId.identifier,
+			['@isStreamer'] = args.isStreamer
+		}, function(rowsChanged)
+			
+		end)
+	else
+		TriggerClientEvent('chatMessage', xPlayer.source, 'عدد مجاز 0 و 1 می باشد.')
+	end
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'isStreamer', type = 'number'},
+}, '.streamer', '.')
+
 ------------ functions and events ------------
+RegisterNetEvent("Master_AdminPanel:GetAdutyList")
+AddEventHandler("Master_AdminPanel:GetAdutyList", function()
+	TriggerClientEvent("IDAboveHead:SetAdutyList", source, AdminAdutyList, StreamerList)
+end)
+
 RegisterNetEvent('esx:onPlayerDeath')
 AddEventHandler('esx:onPlayerDeath', function(data)
 	deadPlayers[source] = data
@@ -489,6 +534,10 @@ end)
 
 AddEventHandler('esx:playerDropped', function(playerId, reason)
 	-- empty tables when player no longer online
+	
+	AdminAdutyList[playerId] = nil
+	StreamerList[playerId] = nil
+	
 	if onTimer[playerId] then
 		onTimer[playerId] = nil
 	end
