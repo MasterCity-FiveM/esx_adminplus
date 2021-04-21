@@ -14,12 +14,12 @@ ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
 end, {
 }, '.tpm', '.')
 
-ESX.RunCustomFunction("AddCommand", "tel", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"tel", "tele", "tl"}, 1, function(xPlayer, args)
 	if args.location == nil or Config.TeleportLocations[args.location] == nil then
 		return
 	end
 	
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tel', "")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tel', "Location: **" .. args.location .. "**")
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, Config.TeleportLocations[args.location].x, Config.TeleportLocations[args.location].y)
 end, {
 	{name = 'location', type = 'string'},
@@ -53,6 +53,7 @@ ESX.RunCustomFunction("AddCommand", "info", 0, function(xPlayer, args)
 		if xPlayer.job.job_sub ~= nil then
 			output = output .. ' - شغل ثانویه: ' .. xPlayer.job.job_sub
 		end
+		output = output .. 'استیم هگز:' .. xPlayer.identifier
 	end
 	
 	TriggerClientEvent('chatMessage', xPlayer.source, output)

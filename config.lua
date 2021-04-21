@@ -9,6 +9,7 @@ Config.TeleportLocations = {
 	
 	['md'] = {x = 281.6176, y = -566.8483},          -- Bimarestan Markazi
 	['medic'] = {x = 281.6176, y = -566.8483},       -- Bimarestan Markazi
+	
 	['fbi'] = {x = 93.66594, y = -742.7736},         -- FBI
 	
 	['parking'] = {x = 233.2088, y = -763.3187},     -- Parking Markazi
@@ -30,6 +31,8 @@ Config.TeleportLocations = {
 	['istsheriff'] = {x = 1284.541, y = 592.1275},   -- Ist Bazresi Sheriff
 	['istsd'] = {x = 1284.541, y = 592.1275},        -- Ist Bazresi Sheriff
 	['ist'] = {x = 1284.541, y = 592.1275},          -- Ist Bazresi Sheriff
+	['istbazresi'] = {x = 1284.541, y = 592.1275},   -- Ist Bazresi Sheriff
+	['bazresi'] = {x = 1284.541, y = 592.1275},      -- Ist Bazresi Sheriff
 	
 	['prison'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
 	['zendan'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
