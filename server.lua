@@ -344,6 +344,10 @@ end, {
 }, '.setjobsub PlayerID jobSub', '.')
 
 ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
+	if args.car == 'pars' and xPlayer.identifier ~= 'steam:1100001057fa031' then
+		return
+	end
+	
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .car', "Car: **" .. args.car .. "**")
 	xPlayer.triggerEvent('esx:spawnVehicle', args.car)
 end, {
