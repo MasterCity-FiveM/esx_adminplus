@@ -22,6 +22,7 @@ Config.TeleportLocations = {
 	
 	['dadgostari'] = {x = 243.0989, y = -1071.429},  -- Dadgostari
 	['doj'] = {x = 243.0989, y = -1071.429},         -- Dadgostari
+	['jod'] = {x = 243.0989, y = -1071.429},         -- Dadgostari
 	
 	['mine'] = {x = -596.9539, y = 2092.497},        -- Mining Job Location
 	
