@@ -2,12 +2,19 @@ ESX = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
+while ESX == nil do
+	Citizen.Wait(1)
+end
+
 local onTimer       = {}
 local savedCoords   = {}
 local warnedPlayers = {}
 local deadPlayers   = {}
 local AdminAdutyList = {}
+local NewPlayers = {}
 local StreamerList = {}
+local timePlay = {}
+
 ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpm', "")
 	TriggerClientEvent("esx_admin:tpm", xPlayer.source)
@@ -106,8 +113,6 @@ ESX.RunCustomFunction("AddCommand", {"bringback", "sumback"}, 1, function(xPlaye
 	local playerCoords = savedCoords[xTarget.source]
 	if playerCoords then
 		xTarget.setCoords(playerCoords)
-		TriggerClientEvent("chatMessageAlert", xPlayer.source, _U('bringback_admin', 'BRINGBACK', GetPlayerName(xTarget.source)))
-		TriggerClientEvent("chatMessageAlert", xTarget.source,  _U('bringback_player', 'BRINGBACK'))
 		savedCoords[xTarget.source] = nil
 	end
 end, {
@@ -123,8 +128,6 @@ ESX.RunCustomFunction("AddCommand", {"goto", "app"}, 1, function(xPlayer, args)
 		local playerCoords = xPlayer.getCoords()
 		savedCoords[xPlayer.source] = playerCoords
 		xPlayer.setCoords(targetCoords)
-		TriggerClientEvent("chatMessage", xPlayer.source, _U('goto_admin', GetPlayerName(xTarget.source)))
-		TriggerClientEvent("chatMessage", xTarget.source,  _U('goto_player'))
 	else
 		TriggerClientEvent("chatMessage", xPlayer.source, _U('not_online', 'GOTO'))
 	end
@@ -522,7 +525,7 @@ end, {
 ------------ functions and events ------------
 RegisterNetEvent("Master_AdminPanel:GetAdutyList")
 AddEventHandler("Master_AdminPanel:GetAdutyList", function()
-	TriggerClientEvent("IDAboveHead:SetAdutyList", source, AdminAdutyList, StreamerList)
+	TriggerClientEvent("IDAboveHead:SetAdutyList", source, AdminAdutyList, StreamerList, NewPlayers)
 end)
 
 RegisterNetEvent('esx:onPlayerDeath')
@@ -537,12 +540,77 @@ AddEventHandler('esx:onPlayerSpawn', function()
 	end
 end)
 
-AddEventHandler('esx:playerDropped', function(playerId, reason)
+AddEventHandler('esx:playerLoaded', function(source)
+    local _source = source
+    local identifier = GetPlayerIdentifier(_source)
+	
+	if not identifier then
+		return
+	end
+	
+    timePlay[identifier] = {source = _source, joinTime = os.time(), timePlay = 0}
+    MySQL.Async.fetchAll("SELECT total_time FROM users WHERE identifier = @identifier", { ["@identifier"] = identifier }, function(result)
+        if result then
+            local timePlayP = tonumber(result[1].total_time)
+            timePlay[identifier].timePlay = timePlayP
+            
+            if timePlayP < 21600 then
+				NewPlayers[_source] = "New"
+				TriggerClientEvent("IDAboveHead:newPlayer", -1, true, _source, "New")
+            end
+			
+        end
+    end)
+end)
+
+ESX.RegisterServerCallback('master_adminpanel:getPlayTime', function(cb, psrc)
+	local playerId = psrc
+	
+	if playerId == nil then
+		cb(0)
+		return
+	end
+	
+	local identifier = GetPlayerIdentifier(playerId)
+	if identifier ~= nil and timePlay[identifier] ~= nil then
+		local leaveTime = os.time()
+		local saveTime = (leaveTime - timePlay[identifier].joinTime) + timePlay[identifier].timePlay
+		cb(saveTime)
+	else
+		cb(0)
+	end
+end)
+
+AddEventHandler('esx:playerDropped', function(source, reason)
 	-- empty tables when player no longer online
 	
-	AdminAdutyList[playerId] = nil
-	StreamerList[playerId] = nil
+	local playerId = source
 	
+	if playerId == nil then
+		return
+	end
+	
+	local identifier = GetPlayerIdentifier(playerId)
+	if identifier ~= nil and timePlay[identifier] ~= nil then
+		local leaveTime = os.time()
+		local saveTime = leaveTime - timePlay[identifier].joinTime
+
+		MySQL.Async.execute('UPDATE users SET total_time = total_time + @total_time, last_leave = NOW() WHERE identifier=@identifier', 
+		{
+			['@identifier'] = identifier,
+			['@total_time'] = saveTime
+		}, function() end)
+		
+		timePlay[identifier] = nil
+	end
+	
+	AdminAdutyList[playerId] = nil
+	TriggerClientEvent("IDAboveHead:aduty", -1, false, playerId, "")
+	StreamerList[playerId] = nil
+	TriggerClientEvent("IDAboveHead:streamer", -1, false, playerId, "")
+	NewPlayers[playerId] = nil
+	TriggerClientEvent("IDAboveHead:newPlayer", -1, false, playerId, "")
+
 	if onTimer[playerId] then
 		onTimer[playerId] = nil
 	end
