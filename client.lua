@@ -316,8 +316,15 @@ AddEventHandler("esx_admin:aduty", function(status, rank)
 		end)
     else
 		godmode = false
-		ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
-            TriggerEvent('skinchanger:loadSkin', skin)
-        end)
+		
+		TriggerEvent('skinchanger:getSkin', function(skin)
+			TriggerEvent("skinchanger:loadClothes", skin, Config.CleanSkin)
+			Citizen.CreateThread(function()
+				Citizen.Wait(100)
+				ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+					TriggerEvent('skinchanger:loadSkin', skin)
+				end)
+			end)
+		end)
     end 
 end)
