@@ -16,6 +16,7 @@ Config.TeleportLocations = {
 	
 	['bankmarkazi'] = {x = 235.2659, y = 216.8835},  -- Bank Markazi
 	['bank'] = {x = 235.2659, y = 216.8835},         -- Bank Markazi
+	
 	['mechanic'] = {x = -369.8506, y = -130.9187},   -- Mechanic
 	
 	['carshop'] = {x = -36.8967, y = -1105.635},     -- Carshop
@@ -25,6 +26,7 @@ Config.TeleportLocations = {
 	['jod'] = {x = 243.0989, y = -1071.429},         -- Dadgostari
 	
 	['mine'] = {x = -596.9539, y = 2092.497},        -- Mining Job Location
+	['mining'] = {x = -596.9539, y = 2092.497},        -- Mining Job Location
 	
 	['sheriff'] = {x = 1849.833, y = 3672.607},      -- Edare Sheriff
 	['sd'] = {x = 1849.833, y = 3672.607},           -- Edare Sheriff
