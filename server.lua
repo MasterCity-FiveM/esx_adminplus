@@ -73,7 +73,7 @@ ESX.RunCustomFunction("AddCommand", {"coords", "gps"}, 1, function(xPlayer, args
 end, {
 }, '.coords', '.')
 
-ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**", "14249563")
 	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', args.message))
 end, {
@@ -93,7 +93,7 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.bring PlayerID', '.')
 
-ESX.RunCustomFunction("AddCommand", {"bringall", "sumall"}, 10, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"bringall", "sumall"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .bringall', "")
 	local playerCoords = xPlayer.getCoords()
 	local xAll = ESX.GetPlayers()
@@ -155,7 +155,7 @@ ESX.RunCustomFunction("AddCommand", {"noclip", "fly"}, 1, function(xPlayer, args
 end, {
 }, '.noclip', '.')
 
-ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 2, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**", "14249563")
 	local xTarget = args.playerId
 	if xTarget then
@@ -198,7 +198,7 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.unfreeze PlayerID', '.')
 
-ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"reviveall", "revall"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .reviveall', "-", "14249563")
 	for i,data in pairs(deadPlayers) do
 		TriggerClientEvent('esx_ambulancejob:revive', i)
@@ -338,7 +338,7 @@ end, {
 	{name = 'grade', type = 'number'}
 }, '.setjob PlayerID Job Grade', '.')
 
-ESX.RunCustomFunction("AddCommand", {"setjobsub", "setsubjob", "setdivision"}, 10, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"setjobsub", "setsubjob", "setdivision"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setjobsub', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nJobSub: **" .. args.jobSub .. "**")
 	args.playerId.setJobSub(args.jobSub:upper())
 end, {
@@ -390,7 +390,7 @@ end, {
 	{name = 'amount', type = 'number'}
 }, '.giveaccountmoney PlayerID Account Amount', '.')
 
-ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveitem', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Item: **" .. args.item .. "**\n Count: **" .. args.count .. "**")
 	args.playerId.addInventoryItem(args.item, args.count)
 end, {
@@ -399,7 +399,7 @@ end, {
 	{name = 'count', type = 'number'}
 }, '.giveitem PlayerID item count', '.')
 
-ESX.RunCustomFunction("AddCommand", "giveweapon", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "giveweapon", 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
 		xPlayer.addWeapon(args.weapon, args.ammo)
@@ -410,7 +410,7 @@ end, {
 	{name = 'ammo', type = 'number'}
 }, '.giveweapon PlayerID weapon ammo', '.')
 
-ESX.RunCustomFunction("AddCommand", {"clearinventory", "removeitems"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"clearinventory", "removeitems"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearinventory', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.inventory) do
 		if v.count > 0 then
@@ -421,7 +421,7 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.clearinventory PlayerID', '.')
 
-ESX.RunCustomFunction("AddCommand", {"clearloadout", "removeguns"}, 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"clearloadout", "removeguns"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearloadout', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.loadout) do
 		args.playerId.removeWeapon(v.name)
