@@ -351,6 +351,7 @@ ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
 		return
 	end
 	
+	TriggerEvent('master_warden:AllowSpawnCar', xPlayer.source)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .car', "Car: **" .. args.car .. "**")
 	xPlayer.triggerEvent('esx:spawnVehicle', args.car)
 end, {
