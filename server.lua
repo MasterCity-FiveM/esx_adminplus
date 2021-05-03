@@ -38,6 +38,13 @@ ESX.RunCustomFunction("AddCommand", {"adminzone", "az"}, 1, function(xPlayer, ar
 end, {
 }, '.az', '.')
 
+ESX.RunCustomFunction("AddCommand", {"charmenu", "skin"}, 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu', "")
+	TriggerClientEvent('mskincreator:loadMenu', args.playerId.source)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.charmenu', '.')
+
 ESX.RunCustomFunction("AddCommand", "tpl", 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpl', "Coords ->\nX: **" .. args.x .. "**\nY: **" .. args.y .. "**")
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
