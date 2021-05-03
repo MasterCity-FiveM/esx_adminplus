@@ -40,6 +40,12 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"charmenu", "skin"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu', "")
+	
+	if args.playerId.source == xPlayer.source then
+		TriggerEvent("masterking32:closeAllUI", xPlayer.source)
+		Citizen.Wait(100)
+	end
+	
 	TriggerClientEvent('mskincreator:loadMenu', args.playerId.source)
 end, {
 	{name = 'playerId', type = 'player'},
@@ -241,6 +247,9 @@ end, {}, '.fix', '.')
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**", "908890")
 	local message = args.Message
+	if msg == nil then
+		return
+	end
 	local xAll = ESX.GetPlayers()
 	for i=1, #xAll, 1 do
 		local xTarget = ESX.GetPlayerFromId(xAll[i])
@@ -255,6 +264,10 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", "me", 0, function(xPlayer, args)
 	local msg = args.action
+	if msg == nil then
+		return
+	end
+	
 	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /me', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
@@ -272,6 +285,9 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", "do", 0, function(xPlayer, args)
 	local msg = args.action
+	if msg == nil then
+		return
+	end
 	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /do', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
@@ -289,6 +305,9 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"ooc", "b"}, 0, function(xPlayer, args)
 	local msg = args.action
+	if msg == nil then
+		return
+	end
 	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /ooc', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
@@ -307,6 +326,9 @@ end, {
 
 ESX.RunCustomFunction("AddCommand", {"s", "yell", "y"}, 0, function(xPlayer, args)
 	local msg = args.action
+	if msg == nil then
+		return
+	end
 	ESX.RunCustomFunction("discord", xPlayer.source, 'rpcmds', 'Used /s (/y)', "Message: **" .. msg .. "**")
 	message = {}
 	message.sender = 0
