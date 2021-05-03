@@ -158,6 +158,11 @@ end, {
 ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 2, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**", "14249563")
 	local xTarget = args.playerId
+	
+	if xPlayer.getRank() < xTarget.getRank() then
+		return
+	end
+	
 	if xTarget then
 		TriggerClientEvent("esx_admin:killPlayer", xTarget.source)
 		TriggerClientEvent("chatMessage", xPlayer.source, _U('kill_admin', GetPlayerName(xTarget.source)))
@@ -173,6 +178,11 @@ end, {
 ESX.RunCustomFunction("AddCommand", "freeze", 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .freeze', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	local xTarget = args.playerId
+	
+	if xPlayer.getRank() < xTarget.getRank() then
+		return
+	end
+	
 	if xTarget then
 		TriggerClientEvent("esx_admin:freezePlayer", xTarget.source, 'freeze')
 		TriggerClientEvent("chatMessage", xPlayer.source, _U('freeze_admin', GetPlayerName(xTarget.source)))
@@ -454,7 +464,7 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.save PlayerID', '.')
 
-ESX.RunCustomFunction("AddCommand", "saveall", 1, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "saveall", 5, function(xPlayer, args)
 	print('[ExtendedMode] [^2INFO^7] Manual player data save triggered')
 	ESX.SavePlayers(function(result)
 		if result then
