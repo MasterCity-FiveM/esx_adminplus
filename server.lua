@@ -21,6 +21,17 @@ ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
 end, {
 }, '.tpm', '.')
 
+ESX.RunCustomFunction("AddCommand", "warn", 1, function(xPlayer, args)
+	if args.message == nil then
+		return
+	end
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .warn (' .. args.playerId.source .. ')' .. ' Message: ' .. args.message, "")
+	TriggerClientEvent("pNotify:SendNotification", args.playerId.source, { text = args.message, type = "error", timeout = 15000, layout = "centerRight"})
+end, {
+	{name = 'playerId', type = 'player'},
+	{name = 'message', type = 'full'}
+}, '.warn playerId message', '.')
+
 ESX.RunCustomFunction("AddCommand", {"tel", "tele", "tl"}, 1, function(xPlayer, args)
 	if args.location == nil or Config.TeleportLocations[args.location] == nil then
 		return

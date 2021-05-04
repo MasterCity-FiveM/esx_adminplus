@@ -39,6 +39,10 @@ Config.TeleportLocations = {
 	
 	['prison'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
 	['zendan'] = {x = 739.2527, y = 131.1956},       -- Zendan Markazi
+	
+	['jobcenter'] = {x = -257.5253, y = -979.5165},  -- Job Center
+	['job'] = {x = -257.5253, y = -979.5165},        -- Job Center
+	['jc'] = {x = -257.5253, y = -979.5165},         -- Job Center
 }
 
 Config.CleanSkin = {
