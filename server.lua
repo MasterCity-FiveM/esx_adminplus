@@ -452,7 +452,7 @@ end, {
 ESX.RunCustomFunction("AddCommand", "giveweapon", 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
-		xPlayer.addWeapon(args.weapon, args.ammo)
+		xPlayer.addWeapon(args.weapon:upper(), args.ammo)
 	end
 end, {
 	{name = 'playerId', type = 'player'},
