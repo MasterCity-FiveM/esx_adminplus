@@ -377,7 +377,7 @@ end, {
 	{name = 'z', type = 'number'}
 }, '.setcoords x y z', '.')
 
-ESX.RunCustomFunction("AddCommand", "setjob", 5, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "setjob", 3, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setjob', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nJob: **" .. args.job .. "**\nGrade: **" .. args.grade .. "**")
 	if ESX.DoesJobExist(args.job, args.grade) then
 		args.playerId.setJob(args.job, args.grade)
