@@ -256,11 +256,13 @@ ESX.RunCustomFunction("AddCommand", {"fix", "repair"}, 1, function(xPlayer, args
 end, {}, '.fix', '.')
 
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**", "908890")
 	local message = args.Message
 	if msg == nil then
 		return
 	end
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**", "908890")
+	
+	
 	local xAll = ESX.GetPlayers()
 	for i=1, #xAll, 1 do
 		local xTarget = ESX.GetPlayerFromId(xAll[i])
