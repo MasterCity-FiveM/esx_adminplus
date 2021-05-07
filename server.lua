@@ -257,7 +257,7 @@ end, {}, '.fix', '.')
 
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
 	local message = args.Message
-	if msg == nil then
+	if message == nil then
 		return
 	end
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .a', "Message: **" .. args.Message .. "**", "908890")
@@ -600,7 +600,7 @@ AddEventHandler('esx:playerLoaded', function(source)
 	if not identifier then
 		return
 	end
-	
+	local xPlayer = ESX.GetPlayerFromId(_source)
     timePlay[identifier] = {source = _source, joinTime = os.time(), timePlay = 0}
     MySQL.Async.fetchAll("SELECT total_time FROM users WHERE identifier = @identifier", { ["@identifier"] = identifier }, function(result)
         if result then
@@ -609,6 +609,7 @@ AddEventHandler('esx:playerLoaded', function(source)
             
             if timePlayP < 21600 then
 				NewPlayers[_source] = "New"
+				xPlayer.set('isNew', true)
 				TriggerClientEvent("IDAboveHead:newPlayer", -1, true, _source, "New")
             end
 			
