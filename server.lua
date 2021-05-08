@@ -527,13 +527,34 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 		xPlayer.set('aduty', false)
 		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
+		if xPlayer.getRank() < 10 then
+			TriggerClientEvent('esx_admin:az', xPlayer.source)
+		end
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
 	else
 		AdminAdutyList[xPlayer.source] = name
 		xPlayer.set('aduty', true)
 		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, true, xPlayer.getRank())
+		if xPlayer.getRank() < 10 then
+			TriggerClientEvent('esx_admin:az', xPlayer.source)
+		end
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** On Duty **")
+	end
+end, {
+}, '.aduty', '.')
+
+ESX.RunCustomFunction("AddCommand", "parking", 1, function(xPlayer, args)
+	--name = xPlayer.firstname .. ' ' .. xPlayer.lastname
+	name = GetPlayerName(xPlayer.source)
+	
+	if xPlayer.get('aduty') and xPlayer.get('aduty') == true then
+		AdminAdutyList[xPlayer.source] = nil
+		xPlayer.set('aduty', false)
+		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
+		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
+		TriggerClientEvent('esx_admin:tpl', xPlayer.source, Config.TeleportLocations['parking'].x, Config.TeleportLocations['parking'].y)
+		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
 	end
 end, {
 }, '.aduty', '.')
