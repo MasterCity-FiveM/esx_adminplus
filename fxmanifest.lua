@@ -9,7 +9,8 @@ shared_scripts {
     'locales/en.lua',
     'config.lua'
 }
-client_script 'client.lua'
+
+client_script 'client/*.lua'
 
 server_scripts {
 	'@async/async.lua',
