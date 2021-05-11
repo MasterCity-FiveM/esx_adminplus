@@ -86,6 +86,47 @@ AddEventHandler('esx_admin:carclean', function()
 	end
 end)
 
+RegisterNetEvent('master_adminpanel:eventRequest')
+AddEventHandler('master_adminpanel:eventRequest', function(playerCoords, message)
+	exports.pNotify:SendNotification({text = '[EVENT]: ' .. message, type = "error", timeout = 10000})
+	local elements = {
+		{label = 'خیر', value = 'nevermind'},
+		{label = 'بله', value = 'join_EVENT'},
+	}
+	
+	ESX.UI.Menu.CloseAll()
+	
+	ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'EventJoin', {
+		title    = 'آیا میخواهید به ایونت بروید؟',
+		align    = 'right',
+		elements = elements
+	}, function(data, menu)
+		ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'EventJoin2', {
+			title    = 'آیا مطمئن هستید؟',
+			align    = 'right',
+			elements = {
+				{label = 'خیر', uniform = 'no'},
+				{label = 'بله', value = 'yes'},
+			}
+		}, function(data2, menu2)
+			if data.current.value == 'join_EVENT' and data2.current.value == 'yes' then
+				menu.close()
+				menu2.close()
+				ESX.Game.Teleport(PlayerPedId(), playerCoords, function() end)
+			elseif data.current.value == 'nevermind' and data2.current.value == 'yes' then
+				menu.close()
+				menu2.close()
+			else
+				menu2.close()
+			end
+		end, function(data2, menu2)
+			menu2.close()
+		end)
+	end, function(data, menu)
+		menu.close()
+	end)
+end)
+
 RegisterNetEvent("esx_admin:freezePlayer")
 AddEventHandler("esx_admin:freezePlayer", function(input)
     local player = PlayerId()

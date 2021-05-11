@@ -117,6 +117,20 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.bring PlayerID', '.')
 
+
+ESX.RunCustomFunction("AddCommand", "event", 5, function(xPlayer, args)
+	local message = args.message
+	if message == nil then
+		return
+	end
+	
+	local playerCoords = xPlayer.getCoords()
+	TriggerClientEvent('master_adminpanel:eventRequest', -1, playerCoords, message)
+end, {
+	{name = 'message', type = 'full'},
+}, '.bring PlayerID', '.')
+
+
 ESX.RunCustomFunction("AddCommand", {"bringall", "sumall"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .bringall', "")
 	local playerCoords = xPlayer.getCoords()
@@ -183,7 +197,7 @@ ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 2, function(xPlayer
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**", "14249563")
 	local xTarget = args.playerId
 	
-	if xPlayer.getRank() < xTarget.getRank() then
+	if xPlayer.getRank() <= xTarget.getRank() then
 		return
 	end
 	
