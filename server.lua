@@ -53,8 +53,8 @@ ESX.RunCustomFunction("AddCommand", {"charmenu", "skin"}, 5, function(xPlayer, a
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu', "")
 	
 	if args.playerId.source == xPlayer.source then
-		TriggerEvent("masterking32:closeAllUI", xPlayer.source)
-		Citizen.Wait(100)
+		TriggerClientEvent("masterking32:closeAllUI", xPlayer.source)
+		Citizen.Wait(1000)
 	end
 	
 	TriggerClientEvent('mskincreator:loadMenu', args.playerId.source)
