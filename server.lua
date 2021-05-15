@@ -270,6 +270,7 @@ ESX.RunCustomFunction("AddCommand", {"fix", "repair"}, 1, function(xPlayer, args
 end, {}, '.fix', '.')
 
 ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
 	local message = args.Message
 	if message == nil then
 		return
@@ -281,7 +282,7 @@ ESX.RunCustomFunction("AddCommand", {"a", "achat", "adminchat"}, 1, function(xPl
 	for i=1, #xAll, 1 do
 		local xTarget = ESX.GetPlayerFromId(xAll[i])
 		if xTarget.getRank() > 0 and xPlayer.source ~= xTarget.source then
-			TriggerClientEvent("pNotify:SendNotification", xTarget.source, { text =  GetPlayerName(xPlayer.source) .. ': ' .. message, type = "error", timeout = 5000, layout = "topLeft"})
+			TriggerClientEvent("pNotify:SendNotification", xTarget.source, { text =  GetPlayerName(xPlayer.source) .. ' (F): ' .. message, type = "error", timeout = 5000, layout = "topLeft"})
 			TriggerClientEvent('chatMessageError', xTarget.source, GetPlayerName(xPlayer.source), message)
 		end
 	end
@@ -289,7 +290,70 @@ end, {
 	{name = 'Message', type = 'full'},
 }, '.a Message', '.')
 
+ESX.RunCustomFunction("AddCommand", "dep", 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
+	local msg = args.Message
+	if msg == nil then
+		return
+	end
+	
+	if not xPlayer or xPlayer.job == nil or xPlayer.job.name == nil or not (xPlayer.job.name == 'fbi' or xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff' or xPlayer.job.name == 'dadsetani' or xPlayer.job.name == 'ambulance') then
+		return
+	end
+	
+	local xAll = ESX.GetPlayers()
+	for i=1, #xAll, 1 do
+		local xTarget = ESX.GetPlayerFromId(xAll[i])
+		if xTarget.job.name == 'fbi' or xTarget.job.name == 'police' or xTarget.job.name == 'sheriff' or xTarget.job.name == 'dadsetani' or xTarget.job.name == 'ambulance' then
+			TriggerClientEvent("pNotify:SendNotification", xTarget.source, { text =  xPlayer.firstname .. " " .. xPlayer.lastname .. ' (DEP - ' .. xPlayer.job.label .. '): ' .. msg, type = "info", timeout = 5000, layout = "centerLeft"})
+			
+			message = {}
+			message.sender = 0
+			message.message_type = 'info'
+			message.message = msg
+			message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (DEP - " .. xPlayer.job.label .. ")"
+			message.name = message.name:gsub("<", "")
+			message.name = message.name:gsub(">", "")
+			TriggerClientEvent("master_chat:reciveMessage", xTarget.source, message)
+		end
+	end
+end, {
+	{name = 'Message', type = 'full'},
+}, '/f Message', '/')
+
+ESX.RunCustomFunction("AddCommand", "f", 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
+	local msg = args.Message
+	if msg == nil then
+		return
+	end
+	
+	if not xPlayer or xPlayer.job == nil or xPlayer.job.name == nil or xPlayer.job.name == 'unemployed' then
+		return
+	end
+	
+	local xAll = ESX.GetPlayers()
+	for i=1, #xAll, 1 do
+		local xTarget = ESX.GetPlayerFromId(xAll[i])
+		if xTarget.job.name == xPlayer.job.name then
+			TriggerClientEvent("pNotify:SendNotification", xTarget.source, { text = xPlayer.firstname .. " " .. xPlayer.lastname .. ' (F - ' .. xPlayer.job.grade_label .. '): ' .. msg, type = "success", timeout = 5000, layout = "centerLeft"})
+			
+			message = {}
+			message.sender = 0
+			message.message_type = 'info'
+			message.message = msg
+			message.name = xPlayer.firstname .. " " .. xPlayer.lastname .. " (F - " .. xPlayer.job.grade_label .. ")"
+			message.name = message.name:gsub("<", "")
+			message.name = message.name:gsub(">", "")
+			TriggerClientEvent("master_chat:reciveMessage", xTarget.source, message)
+		end
+	end
+end, {
+	{name = 'Message', type = 'full'},
+}, '/f Message', '/')
+
 ESX.RunCustomFunction("AddCommand", "me", 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
 	local msg = args.action
 	if msg == nil then
 		return
@@ -311,6 +375,7 @@ end, {
 }, '/me action', '/')
 
 ESX.RunCustomFunction("AddCommand", "do", 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
 	local msg = args.action
 	if msg == nil then
 		return
@@ -331,6 +396,7 @@ end, {
 }, '/do action', '/')
 
 ESX.RunCustomFunction("AddCommand", {"ooc", "b"}, 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
 	local msg = args.action
 	if msg == nil then
 		return
@@ -352,6 +418,7 @@ end, {
 
 
 ESX.RunCustomFunction("AddCommand", {"s", "yell", "y"}, 0, function(xPlayer, args)
+	ESX.RunCustomFunction("anti_ddos", xPlayer.source, 'chat_commands', {})
 	local msg = args.action
 	if msg == nil then
 		return
