@@ -62,6 +62,19 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.charmenu', '.')
 
+ESX.RunCustomFunction("AddCommand", {"charmenu2", "skin2"}, 3, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu2', "")
+	
+	if args.playerId.source == xPlayer.source then
+		TriggerClientEvent("masterking32:closeAllUI", xPlayer.source)
+		Citizen.Wait(1000)
+	end
+	
+	TriggerClientEvent('master_clotheshop:openCustomMenu', args.playerId.source)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.charmenu2', '.')
+
 ESX.RunCustomFunction("AddCommand", "tpl", 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpl', "Coords ->\nX: **" .. args.x .. "**\nY: **" .. args.y .. "**")
 	TriggerClientEvent('esx_admin:tpl', xPlayer.source, args.x, args.y)
