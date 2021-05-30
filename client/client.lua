@@ -1,6 +1,7 @@
 ESX = nil
 local godmode = false
-
+local isAdmin = false
+local RPPauses = {}
 
 ---- DRIFT Configs
 local kmh = 3.6
@@ -20,7 +21,95 @@ Citizen.CreateThread(function()
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
         Citizen.Wait(10)
     end
+	
+	Citizen.Wait(5000)
+	TriggerServerEvent('Master_AdminPanel:IsIamAdmin')
+	TriggerServerEvent('Master_AdminPanel:GetRPPauses')
 end)
+
+RegisterNetEvent("Master_AdminPanel:YouAreAdmin")
+AddEventHandler("Master_AdminPanel:YouAreAdmin", function(status)
+	isAdmin = status
+end)
+
+RegisterNetEvent("Master_AdminPanel:GetRPPauses")
+AddEventHandler("Master_AdminPanel:GetRPPauses", function(List)
+	if List == nil then
+		RPPauses = {}
+	else
+		RPPauses = List
+		startRPPause()
+	end
+end)
+
+local RPLoopStarted = false
+local NearLocation = nil
+
+function startRPPause()
+	if RPLoopStarted == true then
+		return
+	end
+	Citizen.CreateThread(function()
+		RPLoopStarted = true
+		while #RPPauses ~= 0 do
+			Citizen.Wait(0)
+			local playerCoords = GetEntityCoords(PlayerPedId())
+			for k,v in ipairs(RPPauses) do
+				rpp = RPPauses[k]
+				distance = GetDistanceBetweenCoords(playerCoords, rpp.coords, true)
+				if distance < rpp.radius + 100 then
+				
+					if distance > rpp.radius and distance < rpp.radius + 2 and NearLocation ~= nil and not isAdmin then
+						SetPedCoordsKeepVehicle(PlayerPedId(), NearLocation.x, NearLocation.y, NearLocation.z + 0.5)
+					elseif distance >= rpp.radius + 3 then
+						NearLocation = playerCoords
+					elseif distance >= rpp.radius - 2 and distance <= rpp.radius and not isAdmin then
+						SetPedCoordsKeepVehicle(PlayerPedId(), rpp.coords.x, rpp.coords.y, rpp.coords.z + 0.5)
+					end
+					
+					if distance < rpp.radius then
+						showMessage('شما در منطقه توقف PR هستید.')
+					end
+					
+					local color = randomColor(1)
+					DrawMarker(28, rpp.coords, 0.0, 0.0, 0.0, 0, 0.0, 0.0, rpp.radius - 0.2, rpp.radius - 0.2, rpp.radius - 0.2, color.r, color.g, color.b, 190, false, false, 2, false, false, false, false)
+				end
+			end
+		end
+		NearLocation = nil
+		RPLoopStarted = false
+	end)
+end
+
+local UnderShowMessage = false
+function showMessage(msg)
+	Citizen.CreateThread(function()
+		if UnderShowMessage == false then
+			UnderShowMessage = true
+			Citizen.CreateThread(function()
+				exports.pNotify:SendNotification({text = msg, type = "error", timeout = 5000})
+				Citizen.Wait(10000)
+				UnderShowMessage = false
+			end)
+		end
+	end)
+end
+
+function randomColor(f)
+    local g = {}
+    local h = GetGameTimer() / 1000
+    g.r = math.floor(math.sin(h * f + 0) * 127 + 128)
+    g.g = math.floor(math.sin(h * f + 2) * 127 + 128)
+    g.b = math.floor(math.sin(h * f + 4) * 127 + 128)
+    return g
+end
+
+function missionTextDisplay(c, d)
+    ClearPrints()
+    SetTextEntry_2("STRING")
+    AddTextComponentString(c)
+    DrawSubtitleTimed(d, 1)
+end
 ----------------------------------------------------------------------------------
 
 
@@ -292,7 +381,6 @@ AddEventHandler("esx_admin:tpl", function(x, y)
 
 		if foundGround then
 			SetPedCoordsKeepVehicle(PlayerPedId(), x, y, height + 0.0)
-
 			break
 		end
 

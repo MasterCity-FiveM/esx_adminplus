@@ -14,6 +14,7 @@ local AdminAdutyList = {}
 local NewPlayers = {}
 local StreamerList = {}
 local timePlay = {}
+local RPPauses = {}
 
 ESX.RunCustomFunction("AddCommand", {"tpm", "tp"}, 1, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .tpm', "")
@@ -503,6 +504,44 @@ ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
 end, {
 	{name = 'car', type = 'any'},
 }, '.car model', '.')
+
+ESX.RunCustomFunction("AddCommand", "rp", 1, function(xPlayer, args)
+	if args.radius < 5 then
+		args.radius = 5
+	end
+	
+	table.insert(RPPauses, {coords = GetEntityCoords(GetPlayerPed(xPlayer.source)), radius = args.radius})
+	TriggerClientEvent('Master_AdminPanel:GetRPPauses', -1, RPPauses)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .rppause', "**rppause**")
+end, {
+	{name = 'radius', type = 'number'},
+}, '.rppause radius', '.')
+
+
+ESX.RunCustomFunction("AddCommand", {"norp", "rpo"}, 1, function(xPlayer, args)
+	playerLocation = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .rppause_stop', "**rppause_stop**")
+	for k,v in ipairs(RPPauses) do
+		if #(playerLocation - RPPauses[k].coords) < 50 then
+			table.remove(RPPauses,k)
+			TriggerClientEvent('Master_AdminPanel:GetRPPauses', -1, RPPauses)
+			return
+		end
+	end
+end, {}, '.rppause_stop', '.')
+
+RegisterNetEvent("Master_AdminPanel:IsIamAdmin")
+AddEventHandler("Master_AdminPanel:IsIamAdmin", function()
+	xPlayer = ESX.GetPlayerFromId(source)
+	if xPlayer and xPlayer.getRank() > 0 then
+		TriggerClientEvent('Master_AdminPanel:YouAreAdmin', xPlayer.source, true)
+	end
+end)
+
+RegisterNetEvent("Master_AdminPanel:GetRPPauses")
+AddEventHandler("Master_AdminPanel:GetRPPauses", function()
+	TriggerClientEvent('Master_AdminPanel:GetRPPauses', source, RPPauses)
+end)
 
 ESX.RunCustomFunction("AddCommand", "dv", 1, function(xPlayer, args)
 	if args.radius == nil then
