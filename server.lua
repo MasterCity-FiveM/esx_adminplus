@@ -111,6 +111,13 @@ ESX.RunCustomFunction("AddCommand", {"coords", "gps"}, 1, function(xPlayer, args
 end, {
 }, '.coords', '.')
 
+ESX.RunCustomFunction("AddCommand", "coords2", 1, function(xPlayer, args)
+	coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	output = '{"x": ' .. coords.x .. ', "y":' .. coords.y .. ', "z": ' .. coords.z .. '}' 
+	TriggerClientEvent('chatMessage', xPlayer.source, output)
+end, {
+}, '.coords', '.')
+
 ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**", "14249563")
 	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', args.message))
@@ -474,7 +481,7 @@ end, {
 	{name = 'z', type = 'number'}
 }, '.setcoords x y z', '.')
 
-ESX.RunCustomFunction("AddCommand", "setjob", 3, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "setjob", 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setjob', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nJob: **" .. args.job .. "**\nGrade: **" .. args.grade .. "**")
 	if ESX.DoesJobExist(args.job, args.grade) then
 		args.playerId.setJob(args.job, args.grade)
@@ -575,7 +582,7 @@ end, {
 	{name = 'amount', type = 'number'}
 }, '.giveaccountmoney PlayerID Account Amount', '.')
 
-ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 5, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 10, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveitem', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Item: **" .. args.item .. "**\n Count: **" .. args.count .. "**")
 	args.playerId.addInventoryItem(args.item, args.count)
 end, {
@@ -584,7 +591,7 @@ end, {
 	{name = 'count', type = 'number'}
 }, '.giveitem PlayerID item count', '.')
 
-ESX.RunCustomFunction("AddCommand", "giveweapon", 5, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "giveweapon", 10, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
 		xPlayer.addWeapon(args.weapon:upper(), args.ammo)
@@ -660,7 +667,7 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 		xPlayer.set('aduty', false)
 		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, false, xPlayer.getRank())
-		if xPlayer.getRank() < 10 then
+		if xPlayer.getRank() < 5 then
 			TriggerClientEvent('esx_admin:az', xPlayer.source)
 		end
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
@@ -669,7 +676,7 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 		xPlayer.set('aduty', true)
 		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
 		TriggerClientEvent("esx_admin:aduty", xPlayer.source, true, xPlayer.getRank())
-		if xPlayer.getRank() < 10 then
+		if xPlayer.getRank() < 5 then
 			TriggerClientEvent('esx_admin:az', xPlayer.source)
 		end
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** On Duty **")
