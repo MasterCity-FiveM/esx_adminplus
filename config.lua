@@ -43,6 +43,9 @@ Config.TeleportLocations = {
 	['jobcenter'] = {x = -257.5253, y = -979.5165},  -- Job Center
 	['job'] = {x = -257.5253, y = -979.5165},        -- Job Center
 	['jc'] = {x = -257.5253, y = -979.5165},         -- Job Center
+	
+	['paintball'] = {x = 192.1582, y = -921.0329},   -- PaintBall
+	['pb'] = {x = 192.1582, y = -921.0329},   -- PaintBall
 }
 
 Config.CleanSkin = {
