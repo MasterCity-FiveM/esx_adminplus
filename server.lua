@@ -677,6 +677,8 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 	name = GetPlayerName(xPlayer.source)
 	
 	if xPlayer.get('aduty') and xPlayer.get('aduty') == true then
+		TriggerClientEvent('master_weapons:setStatus', xPlayer.source, false)
+		TriggerClientEvent('master_weapons:ResetAll', xPlayer.source)
 		AdminAdutyList[xPlayer.source] = nil
 		xPlayer.set('aduty', false)
 		TriggerClientEvent("IDAboveHead:aduty", -1, false, xPlayer.source, name)
@@ -686,6 +688,8 @@ ESX.RunCustomFunction("AddCommand", {"aduty", "gm"}, 1, function(xPlayer, args)
 		end
 		ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .aduty', "Status: ** Off Duty **")
 	else
+		TriggerClientEvent('master_weapons:setStatus', xPlayer.source, true)
+		TriggerClientEvent('master_weapons:ResetAll', xPlayer.source)
 		AdminAdutyList[xPlayer.source] = name
 		xPlayer.set('aduty', true)
 		TriggerClientEvent("IDAboveHead:aduty", -1, true, xPlayer.source, name)
