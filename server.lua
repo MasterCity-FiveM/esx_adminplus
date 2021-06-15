@@ -118,6 +118,13 @@ ESX.RunCustomFunction("AddCommand", "coords2", 1, function(xPlayer, args)
 end, {
 }, '.coords', '.')
 
+ESX.RunCustomFunction("AddCommand", "coords3", 1, function(xPlayer, args)
+	coords = GetEntityCoords(GetPlayerPed(xPlayer.source))
+	output = '{x= ' .. coords.x .. ', y=' .. coords.y .. ', z= ' .. coords.z .. '}' 
+	TriggerClientEvent('chatMessage', xPlayer.source, output)
+end, {
+}, '.coords', '.')
+
 ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 5, function(xPlayer, args)
 	local msg = args.Message
 	if msg == nil then
@@ -505,6 +512,9 @@ end, {
 }, '.setjobsub PlayerID jobSub', '.')
 
 ESX.RunCustomFunction("AddCommand", "car", 1, function(xPlayer, args)
+	if args.car == nil then
+		return
+	end
 	if args.car == 'pars' and xPlayer.identifier ~= 'steam:1100001057fa031' then
 		return
 	end
