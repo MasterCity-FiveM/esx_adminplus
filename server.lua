@@ -574,7 +574,7 @@ end, {
 	{name = 'radius', type = 'any'},
 }, '.dv radius(optional)', '.')
 
-ESX.RunCustomFunction("AddCommand", "setaccountmoney", 10, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "setaccountmoney", 9, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .setaccountmoney', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nAccount: **" .. args.account .. "**\n Amount: **" .. args.amount .. "**")
 	if args.playerId.getAccount(args.account) then
 		args.playerId.setAccountMoney(args.account, args.amount)
@@ -585,7 +585,7 @@ end, {
 	{name = 'amount', type = 'number'}
 }, '.setaccountmoney PlayerID Account Amount', '.')
 
-ESX.RunCustomFunction("AddCommand", "giveaccountmoney", 10, function(xPlayer, args)
+ESX.RunCustomFunction("AddCommand", "giveaccountmoney", 9, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .giveaccountmoney', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nAccount: **" .. args.account .. "**\n Amount: **" .. args.amount .. "**")
 	if args.playerId.getAccount(args.account) then
 		args.playerId.addAccountMoney(args.account, args.amount)
@@ -596,8 +596,8 @@ end, {
 	{name = 'amount', type = 'number'}
 }, '.giveaccountmoney PlayerID Account Amount', '.')
 
-ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 10, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveitem', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Item: **" .. args.item .. "**\n Count: **" .. args.count .. "**")
+ESX.RunCustomFunction("AddCommand", {"giveitem", "add"}, 9, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .giveitem', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\n Item: **" .. args.item .. "**\n Count: **" .. args.count .. "**")
 	args.playerId.addInventoryItem(args.item, args.count)
 end, {
 	{name = 'playerId', type = 'player'},
@@ -605,8 +605,8 @@ end, {
 	{name = 'count', type = 'number'}
 }, '.giveitem PlayerID item count', '.')
 
-ESX.RunCustomFunction("AddCommand", "giveweapon", 10, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
+ESX.RunCustomFunction("AddCommand", "giveweapon", 9, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
 		xPlayer.addWeapon(args.weapon:upper(), args.ammo)
 	end
@@ -617,7 +617,7 @@ end, {
 }, '.giveweapon PlayerID weapon ammo', '.')
 
 ESX.RunCustomFunction("AddCommand", {"clearinventory", "removeitems"}, 5, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearinventory', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .clearinventory', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.inventory) do
 		if v.count > 0 then
 			args.playerId.setInventoryItem(v.name, 0)
@@ -628,7 +628,7 @@ end, {
 }, '.clearinventory PlayerID', '.')
 
 ESX.RunCustomFunction("AddCommand", {"clearloadout", "removeguns"}, 5, function(xPlayer, args)
-	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .clearloadout', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
+	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .clearloadout', "Target: **" .. GetPlayerName(args.playerId.source) .. "**")
 	for k,v in ipairs(args.playerId.loadout) do
 		args.playerId.removeWeapon(v.name)
 	end
