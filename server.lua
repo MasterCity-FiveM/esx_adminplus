@@ -229,7 +229,7 @@ ESX.RunCustomFunction("AddCommand", {"kill", "slay", "die"}, 2, function(xPlayer
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .kill', "Target: **" .. GetPlayerName(args.playerId.source) .. "**", "14249563")
 	local xTarget = args.playerId
 	
-	if xPlayer.getRank() <= xTarget.getRank() then
+	if not xTarget.source == xPlayer.source and xPlayer.getRank() <= xTarget.getRank() then
 		return
 	end
 	
@@ -608,7 +608,7 @@ end, {
 ESX.RunCustomFunction("AddCommand", "giveweapon", 9, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'highgmactivity', 'Used .giveweapon', "Target: **" .. GetPlayerName(args.playerId.source) .. "**\nWeapon: **" .. args.weapon .. "**\nAmmo: **" .. args.ammo .. "**")
 	if not args.playerId.hasWeapon(args.weapon) then
-		xPlayer.addWeapon(args.weapon:upper(), args.ammo)
+		args.playerId.addWeapon(args.weapon:upper(), args.ammo)
 	end
 end, {
 	{name = 'playerId', type = 'player'},
