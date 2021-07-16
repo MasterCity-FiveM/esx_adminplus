@@ -126,10 +126,11 @@ end, {
 }, '.coords', '.')
 
 ESX.RunCustomFunction("AddCommand", {"ann", "announce"}, 5, function(xPlayer, args)
-	local msg = args.Message
+	local msg = args.message
 	if msg == nil then
 		return
 	end
+	
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .announce', "Message: **" .. args.message .. "**", "14249563")
 	TriggerClientEvent('chatMessageAlert', -1, _U('admin_announce', msg))
 end, {
