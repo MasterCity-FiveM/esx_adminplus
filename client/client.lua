@@ -32,6 +32,59 @@ AddEventHandler("Master_AdminPanel:YouAreAdmin", function(status)
 	isAdmin = status
 end)
 
+RegisterNetEvent("esx_adminplus:removeobject")
+AddEventHandler("esx_adminplus:removeobject", function()
+	Citizen.CreateThread(function()
+		local ped = GetPlayerPed(-1)
+		while true do
+			Citizen.Wait(2000)
+			local handle, object = FindFirstObject()
+			local finished = false
+			repeat
+				Wait(1)
+				local wait = 1
+				
+				if object and IsEntityAttached(object) then
+					NetworkRequestControlOfEntity(object)
+					while not NetworkHasControlOfEntity(object) do
+						NetworkRequestControlOfEntity(object)
+						Citizen.Wait(0)
+						if wait > 50 then
+							break
+						end
+						wait = wait + 1
+					end
+					ReqAndDelete(object, true)
+				end
+				finished, object = FindNextObject(handle)
+			until not finished
+			EndFindObject(handle)
+		end
+	end)
+end)
+
+function ReqAndDelete(object, detach)
+	if DoesEntityExist(object) then
+		NetworkRequestControlOfEntity(object)
+		local wait = 1
+		while not NetworkHasControlOfEntity(object) do
+			if wait > 200 then
+				break
+			end
+			wait = wait + 1
+			Citizen.Wait(1)
+		end
+		if detach then
+			DetachEntity(object, 0, false)
+		end
+		SetEntityCollision(object, false, false)
+		SetEntityAlpha(object, 0.0, true)
+		SetEntityAsMissionEntity(object, true, true)
+		SetEntityAsNoLongerNeeded(object)
+		DeleteEntity(object)
+	end
+end
+
 RegisterNetEvent("Master_AdminPanel:GetRPPauses")
 AddEventHandler("Master_AdminPanel:GetRPPauses", function(List)
 	if List == nil then
@@ -456,4 +509,25 @@ AddEventHandler("esx_admin:aduty", function(status, rank)
 			end)
 		end)
     end 
+end)
+
+RegisterNetEvent("esx_admin:dbg")
+AddEventHandler("esx_admin:dbg", function()
+	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+		local model = nil
+		if skin.sex == 0 then
+			model = GetHashKey("mp_m_freemode_01")
+		else
+			model = GetHashKey("mp_f_freemode_01")
+		end
+		RequestModel(model)
+		while not HasModelLoaded(model) do
+		RequestModel(model)
+			Citizen.Wait(1)
+		end
+		
+		SetPlayerModel(PlayerId(), model)
+		SetModelAsNoLongerNeeded(model)
+		TriggerEvent('skinchanger:loadSkin', skin)
+	end)
 end)

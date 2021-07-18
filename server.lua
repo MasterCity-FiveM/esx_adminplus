@@ -63,6 +63,19 @@ end, {
 	{name = 'playerId', type = 'player'},
 }, '.charmenu', '.')
 
+ESX.RunCustomFunction("AddCommand", "removeobj", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removeobj', "")
+	TriggerClientEvent('esx_adminplus:removeobject', args.playerId.source)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.removeobj', '.')
+
+ESX.RunCustomFunction("AddCommand", "removeobjall", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removeobjall', "")
+	TriggerClientEvent('esx_adminplus:removeobject', -1)
+end, {
+}, '.removeobjall', '.')
+
 ESX.RunCustomFunction("AddCommand", {"charmenu2", "skin2"}, 3, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu2', "")
 	
@@ -858,3 +871,10 @@ AddEventHandler('esx:playerDropped', function(source, reason)
 		deadPlayers[playerId] = nil
 	end
 end)
+
+ESX.RunCustomFunction("AddCommand", {"debug", "dbg"}, 2, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .debug', "")
+	TriggerClientEvent('esx_admin:dbg', xPlayer.source)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.debug ID', '.')
