@@ -3,10 +3,30 @@ local godmode = false
 local isAdmin = false
 local RPPauses = {}
 
+local carry = {
+	InProgress = false,
+	targetSrc = -1,
+	type = "",
+	personCarrying = {
+		animDict = "missfinale_c2mcs_1",
+		anim = "fin_c2_mcs_1_camman",
+		flag = 49,
+	},
+	personCarried = {
+		animDict = "nm",
+		anim = "firemans_carry",
+		attachX = 0.27,
+		attachY = 0.15,
+		attachZ = 0.63,
+		flag = 33,
+	}
+}
+
 ---- DRIFT Configs
 local kmh = 3.6
 local mph = 2.23693629
 local carspeed = 0
+local removeCARSAttach = false
 -----------------
 --   E D I T   --
 -----------------
@@ -36,32 +56,89 @@ RegisterNetEvent("esx_adminplus:removeobject")
 AddEventHandler("esx_adminplus:removeobject", function()
 	Citizen.CreateThread(function()
 		local ped = GetPlayerPed(-1)
-		while true do
-			Citizen.Wait(2000)
-			local handle, object = FindFirstObject()
-			local finished = false
-			repeat
-				Wait(1)
+		local handle, object = FindFirstObject()
+		local finished = false
+		repeat
+			Wait(1)
+			local wait = 1
+			
+			if object and IsEntityAttached(object) then
+				NetworkRequestControlOfEntity(object)
+				while not NetworkHasControlOfEntity(object) do
+					NetworkRequestControlOfEntity(object)
+					Citizen.Wait(0)
+					if wait > 50 then
+						break
+					end
+					wait = wait + 1
+				end
+				ReqAndDelete(object, true)
+			end
+			finished, object = FindNextObject(handle)
+		until not finished
+		EndFindObject(handle)
+	end)
+end)
+
+RegisterNetEvent("esx_adminplus:removecars")
+AddEventHandler("esx_adminplus:removecars", function()
+	Citizen.CreateThread(function()
+		local ped = GetPlayerPed(-1)
+		local cars = GetGamePool('CVehicle')
+
+		for _, car in pairs(cars) do
+			local wait = 1
+			
+			if car and IsEntityAttached(car) then
+				NetworkRequestControlOfEntity(car)
+				while not NetworkHasControlOfEntity(car) do
+					NetworkRequestControlOfEntity(car)
+					Citizen.Wait(0)
+					if wait > 40 then
+						break
+					end
+					wait = wait + 1
+				end
+				ReqAndDelete(car, true)
+			end
+		end
+	end)
+end)
+
+RegisterNetEvent("esx_adminplus:removecarsAuto")
+AddEventHandler("esx_adminplus:removecarsAuto", function(status)
+	removeCARSAttach = false
+	Citizen.Wait(500)
+	removeCARSAttach = status
+	removeAttachedCars()
+end)
+
+function removeAttachedCars()
+	Citizen.CreateThread(function()
+		while removeCARSAttach do
+			Citizen.Wait(100)
+			local ped = GetPlayerPed(-1)
+			local cars = GetGamePool('CVehicle')
+
+			for _, car in pairs(cars) do
 				local wait = 1
 				
-				if object and IsEntityAttached(object) then
-					NetworkRequestControlOfEntity(object)
-					while not NetworkHasControlOfEntity(object) do
-						NetworkRequestControlOfEntity(object)
+				if car and IsEntityAttached(car) then
+					NetworkRequestControlOfEntity(car)
+					while not NetworkHasControlOfEntity(car) do
+						NetworkRequestControlOfEntity(car)
 						Citizen.Wait(0)
-						if wait > 50 then
+						if wait > 40 then
 							break
 						end
 						wait = wait + 1
 					end
-					ReqAndDelete(object, true)
+					ReqAndDelete(car, true)
 				end
-				finished, object = FindNextObject(handle)
-			until not finished
-			EndFindObject(handle)
+			end
 		end
 	end)
-end)
+end
 
 function ReqAndDelete(object, detach)
 	if DoesEntityExist(object) then
@@ -531,3 +608,101 @@ AddEventHandler("esx_admin:dbg", function()
 		TriggerEvent('skinchanger:loadSkin', skin)
 	end)
 end)
+
+function GetClosestPlayer(radius)
+    local playerPed = PlayerPedId()
+	local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+	local targetSrc = GetPlayerServerId(closestPlayer)
+	if closestPlayer ~= -1 and targetSrc ~= -1 and closestDistance < 3 then
+		local closestPlayerPed = GetPlayerPed(closestPlayer)
+		if IsPedDeadOrDying(closestPlayerPed, 1) or IsEntityPlayingAnim(closestPlayerPed, 'missminuteman_1ig_2', 'handsup_base', 3) or IsEntityPlayingAnim(closestPlayerPed, "amb@world_human_bum_slumped@male@laying_on_left_side@base", "base", 1) then
+			return closestPlayer
+		else
+			showMessage('شما فقط امکان حمل شهروندی را دارید که در کماست و یا دستانش بالاست.')
+			return false
+		end					
+	else
+		showMessage('شهروندی نزدیک شما نیست')
+		return false
+	end
+end
+
+local function ensureAnimDict(animDict)
+    if not HasAnimDictLoaded(animDict) then
+        RequestAnimDict(animDict)
+        while not HasAnimDictLoaded(animDict) do
+            Wait(0)
+        end        
+    end
+    return animDict
+end
+
+TriggerEvent('chat:addSuggestion', '/carry', 'Carry a Player', {})
+RegisterCommand('carry', function(source, args, raw)
+	if not carry.InProgress then
+		local closestPlayer = GetClosestPlayer()
+		if closestPlayer ~= false then
+			local targetSrc = GetPlayerServerId(closestPlayer)
+			if targetSrc ~= -1 then
+				TriggerServerEvent("master_adminpanel:request_carry", targetSrc)
+			end
+		end
+	else
+		TriggerServerEvent("master_adminpanel:stopcarry")
+	end
+end)
+
+RegisterNetEvent("master_adminpanel:carryaplayer")
+AddEventHandler("master_adminpanel:carryaplayer", function(targetSrc)
+	carry.InProgress = true
+	carry.targetSrc = targetSrc
+	ensureAnimDict(carry.personCarrying.animDict)
+	carry.type = "carrying"
+	CarryPlayer()
+end)
+
+RegisterNetEvent("master_adminpanel:carrytarget")
+AddEventHandler("master_adminpanel:carrytarget", function(targetSrc)
+	local targetPed = GetPlayerPed(GetPlayerFromServerId(targetSrc))
+	carry.InProgress = true
+	ensureAnimDict(carry.personCarried.animDict)
+	AttachEntityToEntity(PlayerPedId(), targetPed, 0, carry.personCarried.attachX, carry.personCarried.attachY, carry.personCarried.attachZ, 0.5, 0.5, 180, false, false, false, false, 2, false)
+	carry.type = "beingcarried"
+	carry.targetSrc = targetSrc
+	CarryPlayer()
+end)
+
+RegisterNetEvent("master_adminpanel:stopcarry")
+AddEventHandler("master_adminpanel:stopcarry", function()
+	carry.InProgress = false
+	ClearPedSecondaryTask(PlayerPedId())
+	DetachEntity(PlayerPedId(), true, false)
+	carry.targetSrc = 0
+end)
+
+function CarryPlayer()
+	Citizen.CreateThread(function()
+		while carry.InProgress do
+			if carry.type == "beingcarried" then
+				if not IsEntityPlayingAnim(PlayerPedId(), carry.personCarried.animDict, carry.personCarried.anim, 3) then
+					TaskPlayAnim(PlayerPedId(), carry.personCarried.animDict, carry.personCarried.anim, 8.0, -8.0, 100000, carry.personCarried.flag, 0, false, false, false)
+				end
+			elseif carry.type == "carrying" then
+				if not IsEntityPlayingAnim(PlayerPedId(), carry.personCarrying.animDict, carry.personCarrying.anim, 3) then
+					TaskPlayAnim(PlayerPedId(), carry.personCarrying.animDict, carry.personCarrying.anim, 8.0, -8.0, 100000, carry.personCarrying.flag, 0, false, false, false)
+				end
+			end
+			
+			DisableControlAction(0, 24, true) -- Attack
+			DisableControlAction(0, 257, true) -- Attack 2
+			DisableControlAction(0, 25, true) -- Aim
+			DisableControlAction(0, 263, true) -- Melee Attack 1
+			DisableControlAction(0, 21, true) -- RUN
+			DisableControlAction(0, 45, true) -- Reload
+			DisableControlAction(0, 22, true) -- Jump
+			DisableControlAction(0, 44, true) -- Cover
+			DisableControlAction(0, 37, true) -- Select Weapon
+			Wait(0)
+		end
+	end)
+end

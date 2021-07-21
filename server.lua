@@ -1,5 +1,7 @@
 ESX = nil
 
+local carrying = {}
+local carried = {}
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 while ESX == nil do
@@ -68,13 +70,38 @@ ESX.RunCustomFunction("AddCommand", "removeobj", 5, function(xPlayer, args)
 	TriggerClientEvent('esx_adminplus:removeobject', args.playerId.source)
 end, {
 	{name = 'playerId', type = 'player'},
-}, '.removeobj', '.')
+}, '.removeobj playerID', '.')
 
 ESX.RunCustomFunction("AddCommand", "removeobjall", 5, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removeobjall', "")
 	TriggerClientEvent('esx_adminplus:removeobject', -1)
 end, {
 }, '.removeobjall', '.')
+
+ESX.RunCustomFunction("AddCommand", "removecarsall", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removecarsall', "")
+	TriggerClientEvent('esx_adminplus:removecars', -1)
+end, {
+}, '.removecarsall', '.')
+
+ESX.RunCustomFunction("AddCommand", "removecars", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removecars', "")
+	TriggerClientEvent('esx_adminplus:removecars', args.playerId.source)
+end, {
+	{name = 'playerId', type = 'player'},
+}, '.removecars playerID', '.')
+
+ESX.RunCustomFunction("AddCommand", "removecarson", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removecarson', "")
+	TriggerClientEvent('esx_adminplus:removecarsAuto', -1, true)
+end, {
+}, '.removecarson', '.')
+
+ESX.RunCustomFunction("AddCommand", "removecarsoff", 5, function(xPlayer, args)
+	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .removecarson', "")
+	TriggerClientEvent('esx_adminplus:removecarsAuto', -1, false)
+end, {
+}, '.removecarsoff', '.')
 
 ESX.RunCustomFunction("AddCommand", {"charmenu2", "skin2"}, 3, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .charmenu2', "")
@@ -805,7 +832,6 @@ AddEventHandler('esx:playerLoaded', function(source)
 				xPlayer.set('isNew', true)
 				TriggerClientEvent("IDAboveHead:newPlayer", -1, true, _source, "New")
             end
-			
         end
     end)
 end)
@@ -828,13 +854,32 @@ ESX.RegisterServerCallback('master_adminpanel:getPlayTime', function(cb, psrc)
 	end
 end)
 
+AddEventHandler('playerDropped', function(reason)
+	playerDisconnected(source)
+end)
+
 AddEventHandler('esx:playerDropped', function(source, reason)
-	-- empty tables when player no longer online
-	
+	playerDisconnected(source)
+end)
+
+function playerDisconnected(source)
+
 	local playerId = source
 	
 	if playerId == nil then
 		return
+	end
+	
+	if carrying[playerId] ~= nil then
+		TriggerClientEvent("master_adminpanel:stopcarry", carrying[playerId])
+		carried[carrying[playerId]] = nil
+		carrying[playerId] = nil
+	end
+
+	if carried[playerId] ~= nil then
+		TriggerClientEvent("master_adminpanel:stopcarry", carried[playerId])
+		carrying[carried[playerId]] = nil
+		carried[playerId] = nil
 	end
 	
 	local identifier = GetPlayerIdentifier(playerId)
@@ -842,13 +887,12 @@ AddEventHandler('esx:playerDropped', function(source, reason)
 		local leaveTime = os.time()
 		local saveTime = leaveTime - timePlay[identifier].joinTime
 
+		timePlay[identifier] = nil
 		MySQL.Async.execute('UPDATE users SET total_time = total_time + @total_time, last_leave = NOW() WHERE identifier=@identifier', 
 		{
 			['@identifier'] = identifier,
 			['@total_time'] = saveTime
 		}, function() end)
-		
-		timePlay[identifier] = nil
 	end
 	
 	AdminAdutyList[playerId] = nil
@@ -870,7 +914,7 @@ AddEventHandler('esx:playerDropped', function(source, reason)
 	if deadPlayers[playerId] then
 		deadPlayers[playerId] = nil
 	end
-end)
+end
 
 ESX.RunCustomFunction("AddCommand", {"debug", "dbg"}, 2, function(xPlayer, args)
 	ESX.RunCustomFunction("discord", xPlayer.source, 'gmactivity', 'Used .debug', "")
@@ -878,3 +922,40 @@ ESX.RunCustomFunction("AddCommand", {"debug", "dbg"}, 2, function(xPlayer, args)
 end, {
 	{name = 'playerId', type = 'player'},
 }, '.debug ID', '.')
+
+RegisterNetEvent('master_adminpanel:request_carry')
+AddEventHandler('master_adminpanel:request_carry', function(target)
+	_source = source
+	local xPlayer = ESX.GetPlayerFromId(_source)
+	local tPlayer = ESX.GetPlayerFromId(target)
+	if xPlayer and xPlayer ~= nil and tPlayer and tPlayer ~= nil and carrying[xPlayer.source] == nil and carried[tPlayer.source] == nil then
+		distance = #(GetEntityCoords(GetPlayerPed(xPlayer.source)) - GetEntityCoords(GetPlayerPed(tPlayer.source)))
+		if distance > 15 then
+			return
+		end
+		TriggerClientEvent('master_adminpanel:carryaplayer', xPlayer.source, tPlayer.source)
+		carrying[xPlayer.source] = tPlayer.source
+		carried[tPlayer.source] = xPlayer.source
+		TriggerClientEvent("master_adminpanel:carrytarget", tPlayer.source, xPlayer.source)
+	end
+end)
+
+RegisterNetEvent('master_adminpanel:stopcarry')
+AddEventHandler('master_adminpanel:stopcarry', function()
+	_source = source
+	
+	local xPlayer = ESX.GetPlayerFromId(_source)
+	if xPlayer and xPlayer ~= nil then
+		if carrying[xPlayer.source] then
+			TriggerClientEvent("master_adminpanel:stopcarry",xPlayer.source)
+			TriggerClientEvent("master_adminpanel:stopcarry", carrying[xPlayer.source])
+			carried[carrying[xPlayer.source]] = nil
+			carrying[xPlayer.source] = nil
+		elseif carried[xPlayer.source] then
+			TriggerClientEvent("master_adminpanel:stopcarry",xPlayer.source)
+			TriggerClientEvent("master_adminpanel:stopcarry", carried[xPlayer.source])
+			carrying[carried[xPlayer.source]] = nil
+			carried[xPlayer.source] = nil
+		end
+	end
+end)
